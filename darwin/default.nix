@@ -18,4 +18,19 @@ in
       }
     ];
   };
+  deadpool.local = darwin.lib.darwinSystem {
+    inherit system;
+    specialArgs = { inherit inputs mac_vars; };
+    modules = [ 
+      ./personal-laptop
+      # `home-manager` module
+      home-manager.darwinModules.home-manager
+      {
+        nixpkgs = nixpkgsConfig;
+        # `home-manager` config
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+      }
+    ];
+  };
 }
