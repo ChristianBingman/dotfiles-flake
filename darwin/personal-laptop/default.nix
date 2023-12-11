@@ -24,7 +24,7 @@
     system = ${pkgs.system}
   '';
 
-  home-manager.users.cbingman = import ./home.nix { inherit pkgs lib mac_vars; };
+  home-manager.users.christianbingman = import ./home.nix { inherit pkgs lib mac_vars; };
 
   homebrew = {
     enable = true;
@@ -65,7 +65,7 @@
     '';
   };
 
-  users.users.cbingman.home = "/Users/christianbingman";
+  users.users.christianbingman.home = "/Users/christianbingman";
 
 
   # Auto upgrade nix package and the daemon service.

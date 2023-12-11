@@ -18,7 +18,7 @@ in
       }
     ];
   };
-  deadpool.local = darwin.lib.darwinSystem {
+  deadpool = darwin.lib.darwinSystem {
     inherit system;
     specialArgs = { inherit inputs mac_vars; };
     modules = [ 
