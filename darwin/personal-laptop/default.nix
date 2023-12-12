@@ -107,7 +107,7 @@
 
   system.defaults.dock = {
     autohide = true;
-    static-only = true;
+  #  static-only = true;
   };
 
   system.defaults.finder = {
