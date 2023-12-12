@@ -11,10 +11,13 @@
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+
+    nixos-generators.url = "github:nix-community/nixos-generators";
+    nixos-generators.inputs.nixpkgs.follows = "nixpkgs-unstable";
     
   };
 
-  outputs = { self, darwin, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
+  outputs = { self, darwin, nixpkgs, nixpkgs-unstable, home-manager, nixos-generators, ... }@inputs:
   let 
 
     inherit (darwin.lib) darwinSystem;
@@ -58,6 +61,21 @@
         inherit inputs nixpkgs home-manager darwin nixpkgsConfig mac_vars;
       }
     );
+
+    nixosModules.proxmox = {config, ...}: {
+      imports = [
+        nixos-generators.nixosModules.all-formats
+      ];
+      nixpkgs.hostPlatform = "x86_64-linux";
+    };
+
+    nixosConfigurations.proxmox = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        self.nixosModules.proxmox
+        ./proxmox
+      ];
+    };
 
     # Overlays --------------------------------------------------------------- {{{
     overlays = {
