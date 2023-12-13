@@ -49,6 +49,17 @@
     ];
   };
 
+  launchd.user.agents = {
+    raycast = {
+      command = "open /Users/cbingman/Applications/Raycast.app";
+      serviceConfig.RunAtLoad = true;
+    };
+    amethyst = {
+      command = "open /Users/cbingman/Applications/Amethyst.app";
+      serviceConfig.RunAtLoad = true;
+    };
+  };
+
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true;
   services.skhd = {
