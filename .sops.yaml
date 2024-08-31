@@ -1,0 +1,15 @@
+keys:
+  - &nixos age1s9mc36lhp97d38vheakzzwyaht27uhuzjc2lwnt4ztm9g954rg2qk5s3j6
+  - &humantorch age170a5f2wrtdtm3pw8gcw052ldrn985xnzrdn6walqj9lvdl00uyss8panyp
+  - &wolverine age1l3k2et509ymr5y7gmqk2rjkym3vseuk2xmlnqxlw2ylwp4cxmfgq3dsr86
+creation_rules:
+  - path_regex: secrets/humantorch.yaml$
+    key_groups:
+      - age:
+        - *nixos
+        - *humantorch
+  - path_regex: secrets/wolverine.yaml$
+    key_groups:
+      - age:
+        - *nixos
+        - *wolverine
