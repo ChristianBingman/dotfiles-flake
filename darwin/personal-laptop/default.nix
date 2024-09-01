@@ -1,29 +1,5 @@
 { config, pkgs, lib, mac_vars, ... }:
 {
-
-  # Nix configuration ------------------------------------------------------------------------------
-
-  nix.settings.substituters = [
-    "https://cache.nixos.org/"
-  ];
-  nix.settings.trusted-public-keys = [
-    "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-  ];
-  nix.settings.trusted-users = [
-    "@admin"
-  ];
-  nix.configureBuildUsers = true;
-
-  # Enable experimental nix command and flakes
-  # nix.package = pkgs.nixUnstable;
-  nix.extraOptions = ''
-    auto-optimise-store = true
-    experimental-features = nix-command flakes
-  '' + pkgs.lib.optionalString (pkgs.system == "aarch64-darwin") ''
-    extra-platforms = x86_64-darwin aarch64-darwin
-    system = ${pkgs.system}
-  '';
-
   home-manager.users.christianbingman = import ./home.nix { inherit pkgs lib mac_vars; };
 
   homebrew = {
@@ -123,17 +99,37 @@
   # Add ability to used TouchID for sudo authentication
   security.pam.enableSudoTouchIdAuth = true;
 
-  fonts.fonts = [ pkgs.hasklig ];
+  fonts.packages = [ pkgs.hasklig ];
 
   nix = {
     package = pkgs.nixFlakes;
-    extraOptions = "experimental-features = nix-command flakes";
-    settings.trusted-users = [ "root" "nixos" ];
     gc = {
       automatic = true;
-      dates = "weekly";
       options = "--delete-older-than 7d";
     };
   };
+
+  nix.settings = {
+    substituters = [
+      "https://cache.nixos.org/"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    ];
+    trusted-users = [
+      "@admin"
+    ];
+  };
+  nix.configureBuildUsers = true;
+
+  # Enable experimental nix command and flakes
+  # nix.package = pkgs.nixUnstable;
+  nix.extraOptions = ''
+    auto-optimise-store = true
+    experimental-features = nix-command flakes
+  '' + pkgs.lib.optionalString (pkgs.system == "aarch64-darwin") ''
+    extra-platforms = x86_64-darwin aarch64-darwin
+    system = ${pkgs.system}
+  '';
 
 }
