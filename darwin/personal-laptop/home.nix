@@ -1,10 +1,4 @@
 { pkgs, lib, mac_vars, ... }:
-let
-  jiracli = pkgs.fetchzip {
-    url = "https://github.com/ankitpokhrel/jira-cli/releases/download/v1.4.0/jira_1.4.0_macOS_arm64.tar.gz";
-    hash = "sha256-7GtIIW1DfFdFbGBu9HMYhRlxDsbhdV41xe9rm2GxM7Q=";
-  };
-in
 {
   programs.home-manager.enable = true;
   home.username = "christianbingman";
@@ -144,10 +138,6 @@ in
 
   home.file.".local/share/nvim/site/autoload/plug.vim" = {
     source = "${pkgs.vimPlugins.vim-plug}/plug.vim";
-  };
-
-  home.file.".local/usr/bin/jira" = {
-    source = "${jiracli}/bin/jira";
   };
 
   home.file.".config/.raycast" = {

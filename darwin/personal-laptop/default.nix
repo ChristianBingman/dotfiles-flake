@@ -99,6 +99,11 @@
   # Add ability to used TouchID for sudo authentication
   security.pam.enableSudoTouchIdAuth = true;
 
+  system.activationScripts.postUserActivation.text = ''
+    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+    /usr/bin/automator -i ${pkgs.lib.cleanSource ../../config/Background.jpeg} ${pkgs.lib.cleanSource ../../config/setDesktopPicture.workflow}
+  '';
+
   fonts.packages = [ pkgs.hasklig ];
 
   nix = {
