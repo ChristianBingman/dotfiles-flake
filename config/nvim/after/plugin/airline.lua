@@ -1,2 +1,2 @@
--- let g:airline_theme = "minimalist"
-vim.g.airline_theme = "minimalist"
+-- let g:airline_theme = "##########"
+vim.g.airline_theme = "everforest"

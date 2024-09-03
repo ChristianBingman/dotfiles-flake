@@ -25,9 +25,6 @@
     inherit (nixpkgs.lib) attrValues makeOverridable optionalAttrs singleton;
 
     vars = {
-      user = "christian";
-      home = "/home/christian";
-      editor = "nvim";
     };
 
     mac_vars = {
@@ -36,6 +33,8 @@
 
     linux_vars = {
       inherit (vars);
+      user = "christian";
+      home = "/home/christian";
     };
 
     # Configuration for `nixpkgs`

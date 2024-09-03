@@ -36,7 +36,7 @@
     enable = true;
     skhdConfig = ''
       meh - t : open ${pkgs.kitty}/Applications/kitty.app
-      meh - b : open http://grafana.christianbingman.com:8080
+      meh - b : open https://www.google.com
       meh - g : /Applications/Steam\ Link.app/Contents/MacOS/Steam\ Link --windowed
     '';
   };
@@ -101,7 +101,7 @@
 
   system.activationScripts.postUserActivation.text = ''
     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-    /usr/bin/automator -i ${pkgs.lib.cleanSource ../../config/Background.jpeg} ${pkgs.lib.cleanSource ../../config/setDesktopPicture.workflow}
+    /usr/bin/automator -i ${pkgs.lib.cleanSource ../../config/Background.jpg} ${pkgs.lib.cleanSource ../../config/setDesktopPicture.workflow}
   '';
 
   fonts.packages = [ pkgs.hasklig ];

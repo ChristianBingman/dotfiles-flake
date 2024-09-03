@@ -18,7 +18,7 @@
     userEmail = "christianbingman@gmail.com";
   };
 
-  programs.kitty = {
+  programs.kitty = if pkgs.stdenv.isDarwin then {
     enable = true;
     font = {
       name = "Hasklig";
@@ -39,25 +39,47 @@
       clear_all_shortcuts = "yes";
       kitty_mod = "cmd";
       # Colorscheme
-      cursor = "#0DB9D7";
-      background = "#1A1B26";
-      foreground = "#A9B1D6";
-      color0 = "#32344A";
-      color8 = "#444B6A";
-      color1 = "#F7768E";
-      color9 = "#FF7A93";
-      color2 = "#9ECE6A";
-      color10 = "#B9F27C";
-      color3 = "#E0AF68";
-      color11 = "#FF9E64";
-      color4 = "#7AA2F7";
-      color12 = "#7DA6FF";
-      color5 = "#AD8EE6";
-      color13 = "#BB9AF7";
-      color6 = "#449DAB";
-      color14 = "#0DB9D7";
-      color7 = "#787C99";
-      color15 = "#ACB0D0";
+      foreground = "#d3c6aa";
+      background = "#272e33";
+      selection_foreground = "#9da9a0";
+      selection_background = "#464e53";
+      cursor = "#d3c6aa";
+      cursor_text_color = "#2e383c";
+      url_color = "#7fbbb3";
+      active_border_color = "#a7c080";
+      inactive_border_color = "#4f5b58";
+      bell_border_color = "#e69875";
+      visual_bell_color = "none";
+      wayland_titlebar_color = "system";
+      macos_titlebar_color = "system";
+      active_tab_background = "#272e33";
+      active_tab_foreground = "#d3c6aa";
+      inactive_tab_background = "#374145";
+      inactive_tab_foreground = "#9da9a0";
+      tab_bar_background = "#2e383c";
+      tab_bar_margin_color = "none";
+      mark1_foreground = "#272e33";
+      mark1_background = "#7fbbb3";
+      mark2_foreground = "#272e33";
+      mark2_background = "#d3c6aa";
+      mark3_foreground = "#272e33";
+      mark3_background = "#d699b6";
+      color0 = "#343f44";
+      color8 = "#868d80";
+      color1 = "#e67e80";
+      color9 = "#e67e80";
+      color2 = "#a7c080";
+      color10 = "#a7c080";
+      color3 = "#dbbc7f";
+      color11 = "#dbbc7f";
+      color4 = "#7fbbb3";
+      color12 = "#7fbbb3";
+      color5 = "#d699b6";
+      color13 = "#d699b6";
+      color6 = "#83c092";
+      color14 = "#83c092";
+      color7 = "#859289";
+      color15 = "#9da9a0";
     };
 
     keybindings = {
@@ -81,7 +103,7 @@
     };
 
     shellIntegration.enableZshIntegration = true;
-  };
+  } else {};
 
   programs.neovim = {
     enable = true;
