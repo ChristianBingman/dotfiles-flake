@@ -104,6 +104,28 @@
     /usr/bin/automator -i ${pkgs.lib.cleanSource ../../config/Background.jpg} ${pkgs.lib.cleanSource ../../config/setDesktopPicture.workflow}
   '';
 
+  system.defaults.CustomUserPreferences = {
+    "com.apple.finder" = {
+      FXDefaultSearchScope = "SCcf";
+    };
+    "com.apple.desktopservices" = {
+      DSDontWriteNetworkStores = true;
+      DSDontWriteUSBStores = true;
+    };
+    "com.apple.safari" = {
+      AutoOpenSafeDownloads = false;
+      WebAutomaticSpellingCorrectionEnabled = false;
+      ShowFullURLInSmartSearchField = true;
+      AutoFillFromAddressBook = false;
+      AutoFillCreditCardData = false;
+      AutoFillMiscellaneousForms = false;
+    };
+    "com.apple.AdLib" = {
+      allowApplePersonalizedAdvertising = false;
+    };
+    "com.apple.commerce".AutoUpdate = true;
+  };
+
   fonts.packages = [ pkgs.hasklig ];
 
   nix = {

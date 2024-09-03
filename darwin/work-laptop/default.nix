@@ -70,10 +70,11 @@
 
   system.defaults.NSGlobalDomain = {
     AppleInterfaceStyle = "Dark";
-    #AppleShowAllFiles = true;
-    #AppleShowAllExtensions = true;
+    AppleShowAllFiles = true;
+    AppleShowAllExtensions = true;
     "com.apple.mouse.tapBehavior" = 1;
     "com.apple.sound.beep.feedback" = 0;
+    NSDocumentSaveNewDocumentsToCloud = true;
   };
 
   system.defaults.dock = {
@@ -97,6 +98,32 @@
     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
     /usr/bin/automator -i ${pkgs.lib.cleanSource ../../config/Background.jpg} ${pkgs.lib.cleanSource ../../config/setDesktopPicture.workflow}
   '';
+
+  system.defaults.CustomUserPreferences = {
+    NSGlobalDomain = {
+      AppleHighlightColor = "1.000000 0.874510 0.701961 Orange";
+      AppleAccentColor = 1;
+    };
+    "com.apple.finder" = {
+      FXDefaultSearchScope = "SCcf";
+    };
+    "com.apple.desktopservices" = {
+      DSDontWriteNetworkStores = true;
+      DSDontWriteUSBStores = true;
+    };
+    "com.apple.Safari" = {
+      AutoOpenSafeDownloads = false;
+      WebAutomaticSpellingCorrectionEnabled = false;
+      ShowFullURLInSmartSearchField = true;
+      AutoFillFromAddressBook = false;
+      AutoFillCreditCardData = false;
+      AutoFillMiscellaneousForms = false;
+    };
+    "com.apple.AdLib" = {
+      allowApplePersonalizedAdvertising = false;
+    };
+    "com.apple.commerce".AutoUpdate = true;
+  };
 
   fonts.packages = [ pkgs.hasklig ];
 
