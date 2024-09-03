@@ -1,11 +1,6 @@
 { config, pkgs, lib, mac_vars, ... }:
 {
 
-  # Nix configuration ------------------------------------------------------------------------------
-
-  nix.settings.substituters = [
-    "https://cache.nixos.org/"
-  ];
   home-manager.users.cbingman = import ./home.nix { inherit pkgs lib mac_vars; };
 
   homebrew = {
@@ -37,8 +32,7 @@
     enable = true;
     skhdConfig = ''
       meh - t : open ${pkgs.kitty}/Applications/kitty.app
-      meh - b : open http://hulk.christianbingman.com:8080
-      meh - g : /Applications/Steam\ Link.app/Contents/MacOS/Steam\ Link --windowed
+      meh - b : open https://meraki.okta.com
     '';
   };
 
@@ -99,12 +93,17 @@
   # Add ability to used TouchID for sudo authentication
   security.pam.enableSudoTouchIdAuth = true;
 
-  fonts.fonts = [ pkgs.hasklig ];
+  system.activationScripts.postUserActivation.text = ''
+    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+    /usr/bin/automator -i ${pkgs.lib.cleanSource ../../config/Background.jpg} ${pkgs.lib.cleanSource ../../config/setDesktopPicture.workflow}
+  '';
+
+  fonts.packages = [ pkgs.hasklig ];
 
   nix = {
     package = pkgs.nixFlakes;
     extraOptions = ''
-      auto-optimise-store = true
+      auto-optimise-store = false
       experimental-features = nix-command flakes
     '' + pkgs.lib.optionalString (pkgs.system == "aarch64-darwin") ''
       extra-platforms = x86_64-darwin aarch64-darwin
@@ -121,7 +120,6 @@
     configureBuildUsers = true;
     gc = {
       automatic = true;
-      dates = "weekly";
       options = "--delete-older-than 7d";
     };
 
