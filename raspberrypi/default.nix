@@ -18,6 +18,12 @@ let
       };
     };
   };
+  vars = {
+    username = "christian";
+    homedir = "/home/christian";
+    gituser = "ChristianBingman";
+    gitemail = "christianbingman@gmail.com";
+  };
 in {
   imports =
     [ # Include the results of the hardware scan.
@@ -27,7 +33,7 @@ in {
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
 
-  home-manager.users.christian = import ./home.nix { inherit pkgs lib; };
+  home-manager.users.christian = import ../home.nix { inherit pkgs lib vars; };
     
   networking = {
     usePredictableInterfaceNames = true;

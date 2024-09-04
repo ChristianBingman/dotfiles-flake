@@ -1,21 +1,21 @@
-{ pkgs, lib, mac_vars, ... }:
+{ pkgs, lib, vars, ... }:
 {
   programs.home-manager.enable = true;
-  home.username = "christianbingman";
-  home.homeDirectory = "/Users/christianbingman";
+  home.username = vars.username;
+  home.homeDirectory = vars.homedir;
 
   home.stateVersion = "24.05";
   
 
   xdg.configFile.nvim = {
-    source = ../../config/nvim;
+    source = ./config/nvim;
     recursive = true;
   };
 
   programs.git = {
     enable = true;
-    userName = "ChristianBingman";
-    userEmail = "christianbingman@gmail.com";
+    userName = vars.gituser;
+    userEmail = vars.gitemail;
   };
 
   programs.kitty = if pkgs.stdenv.isDarwin then {
@@ -147,7 +147,7 @@
       }
       {
         name = "powerlevel10k-config";
-  src = pkgs.lib.cleanSource ../../config/p10k-config;
+  src = pkgs.lib.cleanSource ./config/p10k-config;
   file = "p10k.zsh";
       }
     ];
@@ -163,7 +163,7 @@
   };
 
   home.file.".config/.raycast" = {
-    source = pkgs.lib.cleanSource ../../config/raycast;
+    source = pkgs.lib.cleanSource ./config/raycast;
     recursive = true;
   };
 
@@ -177,7 +177,7 @@
   };
 
   home.file.".amethyst.yml" = {
-    source = pkgs.lib.cleanSource ../../config/amethyst/amethyst.yml;
+    source = pkgs.lib.cleanSource ./config/amethyst/amethyst.yml;
   };
 
   home.packages = with pkgs; [

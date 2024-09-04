@@ -18,8 +18,14 @@ let
       };
     };
   };
+  vars = {
+    username = "christian";
+    homedir = "/home/christian";
+    gituser = "ChristianBingman";
+    gitemail = "christianbingman@gmail.com";
+  };
 in{
-  home-manager.users.christian = import ./home.nix { inherit pkgs lib; };
+  home-manager.users.christian = import ../home.nix { inherit pkgs lib vars; };
     
   networking = {
     usePredictableInterfaceNames = false;

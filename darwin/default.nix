@@ -5,9 +5,10 @@ in
 {
   CBINGMAN-M-0076 = darwin.lib.darwinSystem {
     inherit system;
-    specialArgs = { inherit inputs mac_vars; } // { mac_vars = { type = "personal"; }; };
+    specialArgs = { inherit inputs mac_vars; };
     modules = [ 
       ./work-laptop
+      ./common.nix
       # `home-manager` module
       home-manager.darwinModules.home-manager
       {
@@ -23,6 +24,7 @@ in
     specialArgs = { inherit inputs mac_vars; };
     modules = [ 
       ./personal-laptop
+      ./common.nix
       # `home-manager` module
       home-manager.darwinModules.home-manager
       {
