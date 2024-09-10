@@ -5,6 +5,7 @@ vars = {
   homedir = "/Users/cbingman";
   gituser = "christia";
   gitemail = "christian.bingman@meraki.net";
+  meraki = true;
 };
 in 
 {

@@ -36,7 +36,7 @@
 
   system.defaults.trackpad.TrackpadRightClick = true;
 
-  time.timeZone = "America/Chicago";
+  time.timeZone = lib.mkDefault "America/Chicago";
 
   # Add ability to used TouchID for sudo authentication
   security.pam.enableSudoTouchIdAuth = true;

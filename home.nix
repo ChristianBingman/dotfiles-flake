@@ -119,15 +119,16 @@
 
     initExtra = ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
+      export PATH="${vars.homedir}/.local/usr/bin:$PATH"
+    '' + lib.optionalString (!vars.meraki or true) ''
       eval $(gpg-agent --daemon 2> /dev/null)
       export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
       GPG_TTY=$(tty)
       export GPG_TTY
-      if [ -f "/Users/cbingman/.gpg-agent-info" ]; then
-          . "/Users/cbingman/.gpg-agent-info"
+      if [ -f "${vars.homedir}/.gpg-agent-info" ]; then
+          . "${vars.homedir}/.gpg-agent-info"
           export GPG_AGENT_INFO
       fi
-      export PATH="/Users/cbingman/.local/usr/bin:$PATH"
     '';
 
     plugins = [
@@ -191,5 +192,7 @@
 
   ] ++ lib.optionals stdenv.isDarwin [
     m-cli # useful macOS CLI commands
+  ] ++ lib.optionals (vars.meraki or false) [
+    teleport
   ];
 }
