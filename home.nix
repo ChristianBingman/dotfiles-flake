@@ -6,7 +6,6 @@
 
   home.stateVersion = "24.05";
   
-
   xdg.configFile.nvim = {
     source = ./config/nvim;
     recursive = true;
@@ -118,7 +117,6 @@
     oh-my-zsh.enable = true;
 
     initExtra = ''
-      eval "$(/opt/homebrew/bin/brew shellenv)"
       export PATH="${vars.homedir}/.local/usr/bin:$PATH"
     '' + lib.optionalString (!vars.meraki or true) ''
       eval $(gpg-agent --daemon 2> /dev/null)
@@ -129,6 +127,8 @@
           . "${vars.homedir}/.gpg-agent-info"
           export GPG_AGENT_INFO
       fi
+    '' + lib.optionaString pkgs.stdenv.isDarwin ''
+      eval "$(/opt/homebrew/bin/brew shellenv)"
     '';
 
     plugins = [
