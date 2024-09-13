@@ -127,7 +127,7 @@
           . "${vars.homedir}/.gpg-agent-info"
           export GPG_AGENT_INFO
       fi
-    '' + lib.optionaString pkgs.stdenv.isDarwin ''
+    '' + lib.optionalString pkgs.stdenv.isDarwin ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
     '';
 
