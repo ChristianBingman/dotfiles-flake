@@ -189,6 +189,7 @@
     jq
     ripgrep
     gnupg
+    terraform
 
   ] ++ lib.optionals stdenv.isDarwin [
     m-cli # useful macOS CLI commands
