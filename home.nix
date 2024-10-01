@@ -82,7 +82,7 @@
     };
 
     keybindings = {
-      "kitty_mod+n" = "launch --location=first --cwd=current";
+      "kitty_mod+k" = "launch --location=first --cwd=current";
       "kitty_mod+shift+n" = "launch --location=first";
       "kitty_mod+w" = "close_window";
       "kitty_mod+q" = "quit";
@@ -94,11 +94,11 @@
       "kitty_mod+escape" = "show_scrollback";
 
       "kitty_mod+shift+l" = "next_layout";
-      "kitty_mod+j" = "previous_window";
-      "kitty_mod+k" = "next_window";
-      "kitty_mod+i" = "move_window_to_top";
-      "kitty_mod+h" = "resize_window narrower";
-      "kitty_mod+l" = "resize_window wider";
+      "kitty_mod+n" = "previous_window";
+      "kitty_mod+e" = "next_window";
+      "kitty_mod+u" = "move_window_to_top";
+      "kitty_mod+m" = "resize_window narrower";
+      "kitty_mod+i" = "resize_window wider";
     };
 
     shellIntegration.enableZshIntegration = true;
