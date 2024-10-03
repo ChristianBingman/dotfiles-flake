@@ -62,12 +62,12 @@ cycle-layout-backward:
 # Shrink the main pane by a percentage of the screen dimension as defined by window-resize-step. Note that not all layouts respond to this command.
 shrink-main:
   mod: mod2
-  key: h
+  key: m
 
 # Expand the main pane by a percentage of the screen dimension as defined by window-resize-step. Note that not all layouts respond to this command.
 expand-main:
   mod: mod2
-  key: l
+  key: i
 
 # Increase the number of windows in the main pane. Note that not all layouts respond to this command.
 #increase-main:
@@ -99,12 +99,12 @@ expand-main:
 # Focus the next window in the list going counter-clockwise.
 focus-ccw:
   mod: mod2
-  key: j
+  key: n
 
 # Focus the next window in the list going clockwise.
 focus-cw:
   mod: mod2
-  key: k
+  key: e
 
 # Focus the main window in the list.
 #focus-main:
@@ -119,17 +119,17 @@ focus-cw:
 # Focus the next screen in the list going clockwise.
 focus-screen-cw:
   mod: mod2
-  key: y
+  key: j
 
 # Move the currently focused window onto the next screen in the list going counter-clockwise.
 swap-screen-ccw:
   mod: mod2
-  key: n
+  key: k
 
 # Move the currently focused window onto the next screen in the list going clockwise.
 swap-screen-cw:
   mod: mod2
-  key: m
+  key: h
 
 # Swap the position of the currently focused window with the next window in the list going counter-clockwise.
 #swap-ccw:
@@ -144,7 +144,7 @@ swap-screen-cw:
 # Swap the position of the currently focused window with the main window in the list.
 swap-main:
   mod: mod2
-  key: i
+  key: u
 
 # Move focus to the n-th screen in the list; e.g., focus-screen-3 will move mouse focus to the 3rd screen. Note that the main window in the given screen will be focused.
 #focus-screen-n:
