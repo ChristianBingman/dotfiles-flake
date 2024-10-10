@@ -39,6 +39,7 @@
     git
     talosctl
     kubectl
+    terraform
   ];
 
   fileSystems."/" =

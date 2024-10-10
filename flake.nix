@@ -88,6 +88,19 @@
         sops-nix.nixosModules.sops
       ];
     };
+    
+    nixosConfigurations.template = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./proxmox
+        ./proxmox/template
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+        sops-nix.nixosModules.sops
+      ];
+    };
 
     nixosConfigurations.wolverine = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";

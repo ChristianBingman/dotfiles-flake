@@ -18,7 +18,7 @@ let
     10.2.0.2  thor # Gaming VM
     10.2.0.3  hulk # Hyper HDR Living Room TV
     10.2.0.4  sentry # Living Room P2P
-    10.2.0.5  captainamerica # General Purpose Infra VM
+    10.2.0.5  prov # Provisioning host
     10.2.0.6  humantorch # NixOS Dev VM
     10.2.0.7  nickfury # Desk RPI
     10.2.0.8  ironman # CM3588 Storage
