@@ -30,6 +30,7 @@
       set -ga terminal-overrides ",*256col*:Tc"
       set -ga terminal-overrides '*:Ss=\E[%p1%d q:Se=\E[ q'
       set-environment -g COLORTERM "truecolor"
+      set-option -g status-position top
 
       # Mouse works as expected
       set-option -g mouse on
@@ -37,6 +38,23 @@
       bind | split-window -h -c "#{pane_current_path}"
       bind - split-window -v -c "#{pane_current_path}"
       bind c new-window -c "#{pane_current_path}"
+      bind -r C-e resize-pane -U
+      bind -r C-n resize-pane -D
+      bind -r C-m resize-pane -L
+      bind -r C-i resize-pane -R
+      bind -r e select-pane -U
+      bind -r n select-pane -D
+      bind -r m select-pane -L
+      bind -r i select-pane -R
+      unbind Up     
+      unbind Down   
+      unbind Left   
+      unbind Right  
+      unbind C-Up   
+      unbind C-Down 
+      unbind C-Left 
+      unbind C-Right
+      
       ## COLORSCHEME: everforest dark medium
       set-option -g status "on"
       set -g status-interval 2
