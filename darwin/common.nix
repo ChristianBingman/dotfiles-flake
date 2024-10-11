@@ -72,6 +72,24 @@
       allowApplePersonalizedAdvertising = false;
     };
     "com.apple.commerce".AutoUpdate = true;
+    "com.apple.symbolichotkeys" = {
+      AppleSymbolicHotKeys = {
+        "79" = {
+          enabled = true;
+          value = {
+            parameters = [ 108 37 917504 ];
+            type = "standard";
+          };
+        };
+        "81" = {
+          enabled = true;
+          value = {
+            parameters = [ 121 16 917504 ];
+            type = "standard";
+          };
+        };
+      };
+    };
   };
 
   fonts.packages = [ pkgs.hasklig ];
