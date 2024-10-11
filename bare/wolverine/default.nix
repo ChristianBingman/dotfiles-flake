@@ -44,6 +44,7 @@ let
     10.2.0.28 logstash # Logstash aggregator
     10.2.0.29 registry # Docker registry
     # End MetalLB
+    10.2.0.36 kube-master-dev # Development kubernetes cluster master
   '';
   cnames = [
     "lychee.${domain},ironman"
