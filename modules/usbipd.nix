@@ -15,20 +15,32 @@ let
 in {
   options.services.usbipd = {
     enable = mkEnableOption "usbip server";
-    kernelModule = mkOption {
+    kernelPackage = mkOption {
       type = types.package;
       default = config.boot.kernelPackages.usbip;
+      description = "The kernel module package to install.";
     };
     devices = mkOption {
       type = types.listOf device;
       default = [];
+      description = "List of USB devices to watch and automatically export.";
+      example = {
+        productid = "xxxx";
+        vendorid = "xxxx";
+      };
+    };
+    openFirewall = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Open port 3240 for usbipd";
+      example = false;
     };
   };
 
   config = mkIf cfg.enable {
-    boot.extraModulePackages = [ cfg.kernelModule ];
+    boot.extraModulePackages = [ cfg.kernelPackage ];
     boot.kernelModules = [ "usbip-core" "usbip-host" ];
-    networking.firewall.allowedTCPPorts = [ 3240 ];
+    networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [ 3240 ];
     services.udev.extraRules = strings.concatLines 
       ((map (dev: 
         "ACTION==\"add\", SUBSYSTEM==\"usb\", ATTRS{idProduct}==\"${dev.productid}\", ATTRS{idVendor}==\"${dev.vendorid}\", RUN+=\"${pkgs.systemd}/bin/systemctl restart usbip-${dev.vendorid}:${dev.productid}.service\"") cfg.devices));
@@ -37,8 +49,8 @@ in {
           after = [ "usbipd.service" ];
           script = ''
             set +e
-            devices=$(${cfg.kernelModule}/bin/usbip list -l | grep -E "^.*- busid.*(${dev.vendorid}:${dev.productid})" )
-            output=$(${cfg.kernelModule}/bin/usbip -d bind -b $(echo $devices | ${pkgs.gawk}/bin/awk '{ print $3 }') 2>&1)
+            devices=$(${cfg.kernelPackage}/bin/usbip list -l | grep -E "^.*- busid.*(${dev.vendorid}:${dev.productid})" )
+            output=$(${cfg.kernelPackage}/bin/usbip -d bind -b $(echo $devices | ${pkgs.gawk}/bin/awk '{ print $3 }') 2>&1)
             code=$?
 
             echo $output
@@ -55,7 +67,7 @@ in {
       }) cfg.devices)) // {
         usbipd = {
           wantedBy = [ "multi-user.target" ];
-          serviceConfig.ExecStart = "${cfg.kernelModule}/bin/usbipd -D";
+          serviceConfig.ExecStart = "${cfg.kernelPackage}/bin/usbipd -D";
           serviceConfig.Type = "forking";
         };
       };
