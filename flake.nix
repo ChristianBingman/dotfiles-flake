@@ -115,6 +115,32 @@
       ];
     };
 
+    nixosConfigurations.kube-worker-dev-1 = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./proxmox
+        ./proxmox/kube-worker-dev-1
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+        sops-nix.nixosModules.sops
+      ];
+    };
+
+    nixosConfigurations.kube-worker-dev-2 = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./proxmox
+        ./proxmox/kube-worker-dev-2
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+        sops-nix.nixosModules.sops
+      ];
+    };
+
     nixosConfigurations.wolverine = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [

@@ -45,6 +45,8 @@ let
     10.2.0.29 registry # Docker registry
     # End MetalLB
     10.2.0.36 kube-master-dev # Development kubernetes cluster master
+    10.2.0.37 kube-worker-dev-1
+    10.2.0.38 kube-worker-dev-2
   '';
   cnames = [
     "lychee.${domain},ironman"
