@@ -19,7 +19,7 @@ in {
   };
 
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 19999 ];
+  networking.firewall.allowedTCPPorts = [ 22 6443 8888 19999 ];
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
   boot.growPartition = true;

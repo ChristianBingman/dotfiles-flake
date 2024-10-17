@@ -4,6 +4,10 @@
 
 { config, lib, pkgs, ... }:
 
+let
+  kubeMasterHostname = "kube-master-dev";
+  api = "https://${kubeMasterHostname}:6443";
+in
 {
   networking = {
     hostName = "kube-worker-dev-1";
@@ -29,6 +33,21 @@
   fileSystems."/nix" = {
     device = "/dev/disk/by-label/nix";
     fsType = "ext4";
+  };
+
+  environment.systemPackages = with pkgs; [
+    kubernetes
+  ];
+
+  services.kubernetes = {
+    roles = ["node"];
+    masterAddress = kubeMasterHostname;
+    easyCerts = true;
+
+    kubelet.kubeconfig.server = api;
+    apiserverAddress = api;
+
+    addons.dns.enable = true;
   };
 }
 
