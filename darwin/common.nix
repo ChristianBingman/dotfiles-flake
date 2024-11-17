@@ -87,6 +87,12 @@
             type = "standard";
           };
         };
+        "64" = {
+          enabled = false;
+        };
+        "65" = {
+          enabled = false;
+        };
       };
     };
   };
