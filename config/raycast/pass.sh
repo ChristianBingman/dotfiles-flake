@@ -25,14 +25,14 @@ then
 fi
 
 if [ -z "$2" ]; then
-  if $HOME/.nix-profile/bin/pass -c $FINDPASS 2> /dev/null
+  if /etc/profiles/per-user/cbingman/bin/pass -c $FINDPASS 2> /dev/null
   then
     echo "$FINDPASS Copied"
   else
     echo "Unable to find: $FINDPASS"
   fi
 else
-  if $HOME/.nix-profile/bin/pass otp -c $FINDPASS 2> /dev/null
+  if /etc/profiles/per-user/cbingman/bin/pass otp -c $FINDPASS 2> /dev/null
   then
     echo "$FINDPASS OTP Copied"
   else

@@ -31,6 +31,10 @@ in
         name = "raycast";
         args = { appdir = "~/Applications"; };
       }
+      {
+        name = "kitty";
+        args = { appdir = "~/Applications"; };
+      }
     ];
   };
 
@@ -39,7 +43,7 @@ in
   services.skhd = {
     enable = true;
     skhdConfig = ''
-      meh - t : open ${pkgs.kitty}/Applications/kitty.app
+      meh - t : open ~/Applications/kitty.app
       meh - b : open https://meraki.okta.com
     '';
   };

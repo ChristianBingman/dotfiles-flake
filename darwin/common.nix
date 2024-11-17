@@ -1,6 +1,5 @@
 { config, pkgs, lib, ... }:
 {
-  ids.gids.nixbld = 30000;
   system.stateVersion = 5;
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true;
@@ -95,7 +94,6 @@
   fonts.packages = [ pkgs.hasklig ];
 
   nix = {
-    package = pkgs.nixFlakes;
     gc = {
       automatic = true;
       options = "--delete-older-than 7d";

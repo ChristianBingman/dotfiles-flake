@@ -31,6 +31,7 @@
       set -ga terminal-overrides '*:Ss=\E[%p1%d q:Se=\E[ q'
       set-environment -g COLORTERM "truecolor"
       set-option -g status-position top
+      set-option -g default-command ${pkgs.zsh}/bin/zsh
 
       # Mouse works as expected
       set-option -g mouse on
@@ -293,6 +294,7 @@
     jq
     ripgrep
     gnupg
+    pass
 
   ] ++ lib.optionals stdenv.isDarwin [
     m-cli # useful macOS CLI commands
