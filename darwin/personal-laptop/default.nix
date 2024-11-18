@@ -28,10 +28,10 @@ in{
       }
       {
         name = "gnucash";
-        args = { appdir = "~/Applications"; };
+        args = { appdir = "~/applications"; };
       }
       {
-        name = "openscad";
+        name = "anki";
         args = { appdir = "~/Applications"; };
       }
     ];
