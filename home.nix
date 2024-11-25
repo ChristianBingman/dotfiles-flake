@@ -276,9 +276,10 @@
   home.file.".gnupg/gpg-agent.conf" = {
     text = ''
       pinentry-program /opt/homebrew/bin/pinentry-mac
-      enable-ssh-support
       default-cache-ttl 600
       max-cache-ttl 7200
+    '' + lib.optionalString (!vars.meraki or true) ''
+      enable-ssh-support
     '';
   };
 
