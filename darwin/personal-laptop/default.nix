@@ -47,4 +47,8 @@ in{
   };
 
   users.users.christianbingman.home = vars.homedir;
+  environment.systemPackages = with pkgs; [
+    pass
+    (pass.withExtensions (ext: with ext; [pass-otp]))
+  ];
 }
