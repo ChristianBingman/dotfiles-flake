@@ -24,10 +24,6 @@ in
     ];
     casks = [
       {
-        name = "amethyst";
-        args = { appdir = "~/Applications"; };
-      }
-      {
         name = "raycast";
         args = { appdir = "~/Applications"; };
       }

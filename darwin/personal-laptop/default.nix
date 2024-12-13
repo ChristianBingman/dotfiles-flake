@@ -41,7 +41,7 @@ in{
     enable = true;
     skhdConfig = ''
       meh - t : open ~/Applications/kitty.app
-      meh - b : open https://search.christianbingman.com
+      meh - b : open https://search.int.christianbingman.com
     '';
   };
 
