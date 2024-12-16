@@ -320,6 +320,10 @@
     source = pkgs.lib.cleanSource ./config/amethyst/amethyst.yml;
   };
 
+  home.file.".aerospace.toml" = {
+    source = pkgs.lib.cleanSource ./config/aerospace/aerospace.toml;
+  };
+
   home.packages = with pkgs; [
     # Some basics
     coreutils
