@@ -19,10 +19,6 @@ in{
     ];
     casks = [
       {
-        name = "amethyst";
-        args = { appdir = "~/Applications"; };
-      }
-      {
         name = "raycast";
         args = { appdir = "~/Applications"; };
       }
@@ -44,15 +40,13 @@ in{
   services.skhd = {
     enable = true;
     skhdConfig = ''
-      meh - t : open ${pkgs.kitty}/Applications/kitty.app
-      meh - b : open https://www.google.com
-      meh - g : /Applications/Steam\ Link.app/Contents/MacOS/Steam\ Link --windowed
+      meh - t : open ~/Applications/kitty.app
+      meh - b : open https://search.christianbingman.com
     '';
   };
 
   users.users.christianbingman.home = vars.homedir;
   environment.systemPackages = with pkgs; [
-    pass
     (pass.withExtensions (ext: with ext; [pass-otp]))
   ];
 }
