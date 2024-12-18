@@ -34,6 +34,10 @@ in{
         name = "kitty";
         args = { appdir = "~/Applications"; };
       }
+      {
+        name = "firefox";
+        args = { appdir = "~/Applications"; };
+      }
     ];
   };
 
