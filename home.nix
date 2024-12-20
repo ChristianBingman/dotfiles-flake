@@ -333,6 +333,7 @@
     ripgrep
     gnupg
     aerospace
+    (pass.withExtensions (ext: with ext; [pass-otp]))
 
   ] ++ lib.optionals stdenv.isDarwin [
     m-cli # useful macOS CLI commands

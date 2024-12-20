@@ -31,6 +31,10 @@ in
         name = "kitty";
         args = { appdir = "~/Applications"; };
       }
+      {
+        name = "orion";
+        args = { appdir = "~/Applications"; };
+      }
     ];
   };
 
@@ -40,7 +44,7 @@ in
     enable = true;
     skhdConfig = ''
       meh - t : open ~/Applications/kitty.app
-      meh - b : open https://meraki.okta.com
+      meh - b : open https://search.christianbingman.com
     '';
   };
 
