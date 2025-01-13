@@ -5,12 +5,11 @@
 { config, lib, pkgs, sops, ... }:
 
 {
-  sops.defaultSopsFile = ../../secrets/humantorch.yaml;
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
   sops.age.generateKey = true;
-  sops.secrets."smb/username" = {};
-  sops.secrets."smb/password" = {};
+  sops.secrets."smb/username" = {sopsFile = ../../secrets/humantorch.yaml;};
+  sops.secrets."smb/password" = {sopsFile = ../../secrets/humantorch.yaml;};
   sops.templates."humantorch-smb-secrets".content = ''
     username=${config.sops.placeholder."smb/username"}
     password=${config.sops.placeholder."smb/password"}
@@ -70,5 +69,9 @@
   };
 
   users.users.christian.extraGroups = [ "wheel" "podman" "docker" ];
+  swapDevices = [ {
+    device = "/var/lib/swapfile";
+    size = 16*1024;
+  } ];
 }
 

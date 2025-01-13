@@ -7,7 +7,7 @@ let
   lan_interface = "eth1";
   dns_servers = [ "1.1.1.1" "8.8.8.8" ];
   dhcp_ranges = [ 
-    "10.2.0.50,10.2.0.254,255.255.255.0,6h"
+    "10.2.0.75,10.2.0.254,255.255.255.0,6h"
     "fd00::02,fd00::ff,12h"
   ];
   domain = "christianbingman.com";
@@ -22,7 +22,7 @@ let
     10.2.0.6  humantorch # NixOS Dev VM
     10.2.0.7  nickfury # Desk RPI
     10.2.0.8  ironman # CM3588 Storage
-    10.2.0.9  nightcrawler # Public VM
+    10.2.0.9  nightcrawler # Proxmox Cluster 4
     10.2.0.10 iceman # Home Assistant
     10.2.0.11 professorx # Proxmox Cluster 1
     10.2.0.12 buckybarnes # Proxmox Cluster 2
@@ -37,26 +37,37 @@ let
     10.2.0.21 blackpanther # Kube Control Planes
     10.2.0.22 blackpanther # Kube Control Planes
     10.2.0.23 blackpanther # Kube Control Planes
-    # 10.2.0.25-35 MetalLB
+    # 10.2.0.25-35 MetalLB Prod
     10.2.0.25 photoprism # Photoprism
     10.2.0.26 internal-proxy # Kube general internal proxy
-    10.2.0.27 unifi # Unifi network controller appliance
-    10.2.0.28 logstash # Logstash aggregator
     10.2.0.29 registry # Docker registry
     # End MetalLB
-    10.2.0.36 kube-master-dev # Development kubernetes cluster master
-    10.2.0.37 kube-worker-dev-1
-    10.2.0.38 kube-worker-dev-2
+    10.2.0.36 kube-master-int
+    10.2.0.37 kube-worker-int-1
+    10.2.0.38 kube-worker-int-2
+    10.2.0.39 kube-worker-int-3
+    # 10.2.0.40-50 MetalLB Int
+    10.2.0.40 elasticsearch-int
+    10.2.0.41 kube-int-ingress
+    10.2.0.43 mosquitto
+    # End MetalLB
+    10.2.0.51 shangchi # Gaming windows VM
+    10.2.0.52 x53 # NVIDIA VM
+    10.2.0.53 cloak # Meraki MS350
   '';
   cnames = [
-    "lychee.${domain},ironman"
     "transmission.${domain},ironman"
-    "elasticsearch.${domain},ironman"
     "homeassistant.${domain},iceman"
-    "www.${domain},internal-proxy"
-    "grafana.kubernetes-prod.${domain},internal-proxy"
-    "rails.kubernetes-prod.${domain},internal-proxy"
-    "pushgateway.kubernetes-prod.${domain},internal-proxy"
+    "grafana.int.${domain},kube-int-ingress"
+    "argocd.int.${domain},kube-int-ingress"
+    "www.int.${domain},kube-int-ingress"
+    "search.int.${domain},kube-int-ingress"
+    "anki.int.${domain},kube-int-ingress"
+    "frigate.int.${domain},kube-int-ingress"
+    "auth.${domain},kube-int-ingress"
+  ];
+  addresses = [
+    "/.int.christianbingman.com/10.2.0.41"
   ];
 in {
   sops.defaultSopsFile = ../../secrets/wolverine.yaml;
@@ -141,16 +152,15 @@ in {
         "${hosts}"
       ];
       dhcp-lease-max = 100;
-      local = "/${domain}/";
       domain = "${domain}";
       expand-hosts = true;
       cache-size = 150;
       dhcp-option = [
         "option6:dns-server,[${lan_ipv6}]"
         "option:dns-server,${lan_ip}"
-        "43,10.2.0.27"
       ];
       cname = cnames;
+      address = addresses;
     };
   };
 
@@ -162,15 +172,6 @@ in {
     ];
     authKeyFile = config.sops.secrets.ts-authkey.path;
     useRoutingFeatures = "server";
-  };
-
-  systemd.services.glances = {
-    description = "Remote monitoring application";
-    serviceConfig.ExecStart = "${pkgs.glances}/bin/glances -w --disable-webui --disable-autodiscover -B 10.2.0.1 -q";
-    serviceConfig.Restart = "on-failure";
-    serviceConfig.Type = "simple";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
   };
 
   services.apcupsd.enable = true;

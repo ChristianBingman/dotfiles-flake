@@ -1,6 +1,18 @@
 { config, lib, pkgs, home-manager, ... }:
 let
-  filebeat_config = builtins.toJSON {
+  vars = {
+    username = "christian";
+    homedir = "/home/christian";
+    gituser = "ChristianBingman";
+    gitemail = "christianbingman@gmail.com";
+  };
+in{
+  sops.defaultSopsFile = ../secrets/all.yaml;
+  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+  sops.age.generateKey = true;
+  sops.secrets."elasticsearch_pass" = {};
+  sops.templates."elasticsearch_config.json".content = builtins.toJSON {
     filebeat = {
       inputs = [
         {
@@ -13,18 +25,19 @@ let
       level = "warning";
     };
     output = {
-      logstash = {
-        hosts = [ "logstash.christianbingman.com:5044" ];
+      elasticsearch = {
+        hosts = [ "elasticsearch-int.christianbingman.com:9200" ];
+        username = "elastic";
+        password = config.sops.placeholder."elasticsearch_pass";
       };
     };
+    setup.ilm = {
+      enabled = true;
+      rollover_alias = "syslog-%{[agent.version]}";
+      pattern = "{now/d}-000001";
+      policy_name = "syslog-30d";
+    };
   };
-  vars = {
-    username = "christian";
-    homedir = "/home/christian";
-    gituser = "ChristianBingman";
-    gitemail = "christianbingman@gmail.com";
-  };
-in{
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -80,7 +93,6 @@ in{
   system.stateVersion = "23.11"; # Did you read the comment?
 
   nix = {
-    package = pkgs.nixFlakes;
     extraOptions = "experimental-features = nix-command flakes";
     settings.trusted-users = [ "root" "nixos" ];
     gc = {
@@ -104,7 +116,7 @@ in{
 
   systemd.services.filebeat.serviceConfig.ExecStart = lib.mkForce ''
     ${pkgs.filebeat}/bin/filebeat -e \
-      -c '${pkgs.writeText "filebeat.json" filebeat_config}' \
+      -c '${config.sops.templates."elasticsearch_config.json".path}' \
       --path.data '/var/lib/filebeat'
   '';
 }

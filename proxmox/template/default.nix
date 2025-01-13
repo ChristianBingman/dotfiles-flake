@@ -30,5 +30,10 @@
     device = "/dev/disk/by-label/nix";
     fsType = "ext4";
   };
+
+  boot.postBootCommands = ''
+    rm -f /etc/ssh/ssh_host*
+    systemctl restart sshd
+  '';
 }
 

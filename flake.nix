@@ -102,11 +102,12 @@
       ];
     };
 
-    nixosConfigurations.kube-master-dev = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.kube-master-int-1 = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./proxmox
-        ./proxmox/kube-master-dev
+        ./proxmox/kube-default
+        ./proxmox/kube-master-int-1
         home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
@@ -115,11 +116,12 @@
       ];
     };
 
-    nixosConfigurations.kube-worker-dev-1 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.kube-worker-int-1 = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./proxmox
-        ./proxmox/kube-worker-dev-1
+        ./proxmox/kube-default
+        ./proxmox/kube-worker-int-1
         home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
@@ -128,11 +130,39 @@
       ];
     };
 
-    nixosConfigurations.kube-worker-dev-2 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.kube-worker-int-2 = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./proxmox
-        ./proxmox/kube-worker-dev-2
+        ./proxmox/kube-default
+        ./proxmox/kube-worker-int-2
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+        sops-nix.nixosModules.sops
+      ];
+    };
+
+    nixosConfigurations.kube-worker-int-3 = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./proxmox
+        ./proxmox/kube-default
+        ./proxmox/kube-worker-int-3
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+        sops-nix.nixosModules.sops
+      ];
+    };
+
+    nixosConfigurations.x53 = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./proxmox
+        ./proxmox/x53
         home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
@@ -160,6 +190,19 @@
         self.nixosModules.raspberrypi
         ./raspberrypi
         ./raspberrypi/nickfury
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+      ];
+    };
+
+    nixosConfigurations.northstar = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      modules = [
+        self.nixosModules.raspberrypi
+        ./raspberrypi
+        ./raspberrypi/northstar
         home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;

@@ -37,7 +37,7 @@ in {
     
   networking = {
     usePredictableInterfaceNames = true;
-    defaultGateway = "10.2.0.1";
+    #defaultGateway = "10.2.0.1";
     nameservers = [ "10.2.0.1" ];
   };
 
@@ -83,7 +83,6 @@ in {
   system.stateVersion = "24.05"; # Did you read the comment?
 
   nix = {
-    package = pkgs.nixFlakes;
     extraOptions = "experimental-features = nix-command flakes";
     settings.trusted-users = [ "root" "nixos" ];
     gc = {
@@ -94,6 +93,12 @@ in {
   };
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.overlays = [(
+    final: super: {
+      makeModulesClosure = x:
+      super.makeModulesClosure (x // { allowMissing = true; });
+    }
+  )];
 
   services.netdata.enable = true;
   services.netdata.config.statsd.enabled = "yes";

@@ -2,6 +2,11 @@ keys:
   - &nixos age1s9mc36lhp97d38vheakzzwyaht27uhuzjc2lwnt4ztm9g954rg2qk5s3j6
   - &humantorch age170a5f2wrtdtm3pw8gcw052ldrn985xnzrdn6walqj9lvdl00uyss8panyp
   - &wolverine age1l3k2et509ymr5y7gmqk2rjkym3vseuk2xmlnqxlw2ylwp4cxmfgq3dsr86
+  - &x53 age17n34nwgrjhw8fgp4f40h3fxamx0a3fx9jyxk80v5k0k0hym5tees0aymau
+  - &kube-master-int age10u52y3gua47np07wm7k4q2el2de8vg6dncz35pq3rvxt7eym5eus9kqvh6
+  - &kube-worker-int-1 age1qwq3yg40l6wemr23n3lj77kej0c98drtnypjncakv7hemgpt0sqswq8xrl
+  - &kube-worker-int-2 age156cz2s38mk65g79lhv83gxe5zjfpzd7t2yxhfyewhmejej4v45rs97lrpf
+  - &kube-worker-int-3 age17kh4zyu35hlkzy96axw8k05ua2pwxtxqqqkmusrcuq6cyyknsyusngxyp5
 creation_rules:
   - path_regex: secrets/humantorch.yaml$
     key_groups:
@@ -12,4 +17,28 @@ creation_rules:
     key_groups:
       - age:
         - *nixos
+        - *wolverine
+  - path_regex: secrets/x53.yaml$
+    key_groups:
+      - age:
+        - *nixos
+        - *x53
+  - path_regex: secrets/kube-shared.yaml$
+    key_groups:
+      - age:
+        - *nixos
+        - *kube-master-int
+        - *kube-worker-int-1
+        - *kube-worker-int-2
+        - *kube-worker-int-3
+  - path_regex: secrets/all.yaml$
+    key_groups:
+      - age:
+        - *nixos
+        - *x53
+        - *kube-master-int
+        - *kube-worker-int-1
+        - *kube-worker-int-2
+        - *kube-worker-int-3
+        - *humantorch
         - *wolverine
