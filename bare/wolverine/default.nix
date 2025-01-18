@@ -65,6 +65,7 @@ let
     "anki.int.${domain},kube-int-ingress"
     "frigate.int.${domain},kube-int-ingress"
     "auth.${domain},kube-int-ingress"
+    "longhorn.int.${domain},kube-int-ingress"
   ];
   addresses = [
     "/.int.christianbingman.com/10.2.0.41"

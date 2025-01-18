@@ -35,7 +35,7 @@ in {
       }
     ];
     logging = {
-      level = "info";
+      level = "warning";
     };
     output = {
       elasticsearch = {
@@ -142,4 +142,5 @@ in {
     serviceConfig.StateDirectory = "filebeat-container";
     wantedBy = [ "multi-user.target" ];
   };
+  virtualisation.containerd.settings.debug.level = "warn";
 }
