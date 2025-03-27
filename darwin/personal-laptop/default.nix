@@ -35,7 +35,7 @@ in{
         args = { appdir = "~/Applications"; };
       }
       {
-        name = "firefox";
+        name = "orion";
         args = { appdir = "~/Applications"; };
       }
     ];
