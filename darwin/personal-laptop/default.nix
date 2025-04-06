@@ -38,6 +38,10 @@ in{
         name = "orion";
         args = { appdir = "~/Applications"; };
       }
+      {
+        name = "karabiner-elements";
+        args = { appdir = "~/Applications"; };
+      }
     ];
   };
 

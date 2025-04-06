@@ -123,7 +123,7 @@
   };
 
   programs.kitty = if pkgs.stdenv.isDarwin then {
-    enable = true;
+    enable = false;
     font = {
       name = "Hasklig";
       package = pkgs.hasklig;

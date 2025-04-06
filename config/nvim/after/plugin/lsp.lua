@@ -1,60 +1,34 @@
-local lsp_zero = require('lsp-zero')
-
-lsp_zero.on_attach(function(client, bufnr)
-  local opts = {buffer = bufnr, remap = false}
-
-  vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-  vim.keymap.set("n", "<leader>gd", function() vim.lsp.buf.definition() end, opts)
-  vim.keymap.set("n", "<leader>sd", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<leader>rd", function() vim.lsp.buf.rename() end, opts)
-end)
-
-lsp_zero.extend_lspconfig({
-  isign_text = true,
-})
-
-require('mason').setup({})
-require('mason-lspconfig').setup({
-  handlers = {
-    lsp_zero.default_setup,
-    lua_ls = function()
-      local lua_opts = lsp_zero.nvim_lua_ls()
-      require('lspconfig').lua_ls.setup(lua_opts)
-    end,
-  }
-})
-
-require('lspconfig').rust_analyzer.setup{}
-
-local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = cmp.mapping.preset.insert({
-  ['<S-TAB>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<TAB>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<CR>'] = cmp.mapping.confirm({ select = true }),
-  ["<C-Space>"] = cmp.mapping.complete(),
-})
-
-require('luasnip.loaders.from_vscode').lazy_load()
+local cmp = require'cmp'
 
 cmp.setup({
-  sources = {
-    {name = 'path'},
-    {name = 'nvim_lsp'},
-    {name = 'nvim_lua'},
-    {name = 'luasnip', keyword_length = 2},
-    {name = 'buffer', keyword_length = 3},
+  snippet = {
+    -- REQUIRED - you must specify a snippet engine
+    expand = function(args)
+      vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
+    end,
   },
-  formatting = lsp_zero.cmp_format({details = false}),
-  mapping = cmp_mappings,
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+  }, {
+    { name = 'buffer' },
+  })
 })
 
-lsp_zero.format_on_save({
-  format_opts = {
-    async = false,
-    timeout_ms = 10000,
-  },
-  servers = {
-    ['rust_analyzer'] = {'rust'},
-  }
-})
+
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local lspconfig = require('lspconfig')
+lspconfig.jedi_language_server.setup {
+  capabilities = capabilities
+}
+

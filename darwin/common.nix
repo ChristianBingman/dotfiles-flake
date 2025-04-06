@@ -4,9 +4,6 @@
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true;
 
-  # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
-
   environment.systemPackages = with pkgs; [
     openssh
   ];
@@ -40,7 +37,7 @@
   time.timeZone = lib.mkDefault "America/Chicago";
 
   # Add ability to used TouchID for sudo authentication
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   system.activationScripts.postUserActivation.text = ''
     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
@@ -100,6 +97,7 @@
   fonts.packages = [ pkgs.hasklig ];
 
   nix = {
+    enable = true;
     gc = {
       automatic = true;
       options = "--delete-older-than 7d";
@@ -117,7 +115,6 @@
       "@admin"
     ];
   };
-  nix.configureBuildUsers = true;
 
   # Enable experimental nix command and flakes
   # nix.package = pkgs.nixUnstable;
