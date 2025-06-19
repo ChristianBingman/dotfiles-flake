@@ -5,6 +5,7 @@ let
   lan_ipv6 = "fd00::1";
   wan_interface = "eth0";
   lan_interface = "eth1";
+  tailscale_interface = "tailscale0";
   dns_servers = [ "1.1.1.1" "8.8.8.8" ];
   dhcp_ranges = [ 
     "10.2.0.75,10.2.0.254,255.255.255.0,6h"
@@ -54,6 +55,7 @@ let
     10.2.0.51 shangchi # Gaming windows VM
     10.2.0.52 x53 # NVIDIA VM
     10.2.0.53 cloak # Meraki MS350
+    100.121.124.110 northstar # Remote PI
   '';
   cnames = [
     "transmission.${domain},ironman"
@@ -66,6 +68,8 @@ let
     "frigate.int.${domain},kube-int-ingress"
     "auth.${domain},kube-int-ingress"
     "longhorn.int.${domain},kube-int-ingress"
+    "time.int.${domain},kube-int-ingress"
+    "photoprism.int.${domain},kube-int-ingress"
   ];
   addresses = [
     "/.int.christianbingman.com/10.2.0.41"
@@ -130,9 +134,9 @@ in {
         iptables -A FORWARD -i ${wan_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
         iptables -A FORWARD -i ${lan_interface} -o ${wan_interface}
 
-        ip6tables -t nat -A POSTROUTING -o ${wan_interface} -j MASQUERADE
-        ip6tables -A FORWARD -i ${wan_interface} -o ${lan_interface}
-        ip6tables -A FORWARD -i ${lan_interface} -o ${wan_interface}
+        iptables -t nat -A POSTROUTING -o ${tailscale_interface} -j MASQUERADE
+        iptables -A FORWARD -i ${tailscale_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
+        iptables -A FORWARD -i ${lan_interface} -o ${tailscale_interface}
         '';
     };
 

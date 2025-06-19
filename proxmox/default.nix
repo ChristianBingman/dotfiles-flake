@@ -90,8 +90,6 @@ in{
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
-  system.stateVersion = "23.11"; # Did you read the comment?
-
   nix = {
     extraOptions = "experimental-features = nix-command flakes";
     settings.trusted-users = [ "root" "nixos" ];
@@ -113,6 +111,8 @@ in{
   services.qemuGuest.enable = true;
 
   services.filebeat.enable = true;
+
+  system.stateVersion = "25.11"; # Did you read the comment?
 
   systemd.services.filebeat.serviceConfig.ExecStart = lib.mkForce ''
     ${pkgs.filebeat}/bin/filebeat -e \

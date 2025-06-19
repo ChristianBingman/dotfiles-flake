@@ -1,15 +1,6 @@
 { config, lib, pkgs, ... }:
 let
 in {
-  imports = [ ../../modules/usbipd.nix ];
-  services.usbipd.enable = true;
-  services.usbipd.devices = [
-    {
-      productid = "b660";
-      vendorid = "044f";
-    }
-  ];
-
   networking = {
     hostName = "nickfury";
     defaultGateway = "10.2.0.1";

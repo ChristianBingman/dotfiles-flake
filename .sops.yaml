@@ -7,7 +7,13 @@ keys:
   - &kube-worker-int-1 age1qwq3yg40l6wemr23n3lj77kej0c98drtnypjncakv7hemgpt0sqswq8xrl
   - &kube-worker-int-2 age156cz2s38mk65g79lhv83gxe5zjfpzd7t2yxhfyewhmejej4v45rs97lrpf
   - &kube-worker-int-3 age17kh4zyu35hlkzy96axw8k05ua2pwxtxqqqkmusrcuq6cyyknsyusngxyp5
+  - &northstar age1qk85kp8zkj7jxnaffsss6zu7q5upmvwfs05qpaj36zlplhz5vsvsz3cw2u
 creation_rules:
+  - path_regex: secrets/northstar.yaml$
+    key_groups:
+      - age:
+        - *nixos
+        - *northstar
   - path_regex: secrets/humantorch.yaml$
     key_groups:
       - age:
@@ -42,3 +48,4 @@ creation_rules:
         - *kube-worker-int-3
         - *humantorch
         - *wolverine
+        - *northstar

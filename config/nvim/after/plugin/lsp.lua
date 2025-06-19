@@ -32,3 +32,6 @@ lspconfig.jedi_language_server.setup {
   capabilities = capabilities
 }
 
+lspconfig.clangd.setup{
+  capabilities = capabilities
+}

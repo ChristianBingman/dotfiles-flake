@@ -5,12 +5,11 @@
 { config, lib, pkgs, ... }:
 
 {
-  sops.defaultSopsFile = ../../secrets/x53.yaml;
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
   sops.age.generateKey = true;
-  sops.secrets."smb/username" = {};
-  sops.secrets."smb/password" = {};
+  sops.secrets."smb/username" = { sopsFile = ../../secrets/x53.yaml; };
+  sops.secrets."smb/password" = { sopsFile = ../../secrets/x53.yaml; };
   sops.templates."x53-smb-secrets".content = ''
     username=${config.sops.placeholder."smb/username"}
     password=${config.sops.placeholder."smb/password"}
@@ -74,6 +73,7 @@
   fileSystems."/nix" = {
     device = "/dev/disk/by-label/nix";
     fsType = "ext4";
+    autoResize = true;
   };
   fileSystems."/mnt/movies" = {
     device = "//ironman.christianbingman.com/General/Movies";
@@ -93,6 +93,12 @@
     pkgs.jellyfin-ffmpeg
   ];
 
+  services.ollama = {
+    enable = true;
+    openFirewall = true;
+    acceleration = "cuda";
+  };
+
   virtualisation = {
     podman = {
       enable = true;
@@ -111,6 +117,7 @@
       environment = {
         AUTO_DISC_RIPPER = "1";
         AUTO_DISC_RIPPER_EJECT = "1";
+        MAKEMKV_KEY = "T-iyhMMBV8nWtNo3BgMdcvypH8UL01nYmww2zFzQDtiZsdJUOaAuCURsPRQ1Hj3i75RE";
       };
       extraOptions = [
         "--device=/dev/sr0"

@@ -15,6 +15,7 @@
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
     sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     
   };
 
@@ -207,6 +208,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
         }
+        sops-nix.nixosModules.sops
       ];
     };
     # Overlays --------------------------------------------------------------- {{{

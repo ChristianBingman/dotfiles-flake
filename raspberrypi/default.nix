@@ -1,23 +1,5 @@
 { config, lib, pkgs, home-manager, ... }:
 let
-  filebeat_config = builtins.toJSON {
-    filebeat = {
-      inputs = [
-        {
-          type = "journald";
-          id = "everything";
-        }
-      ];
-    };
-    logging = {
-      level = "warning";
-    };
-    output = {
-      logstash = {
-        hosts = [ "logstash.christianbingman.com:5044" ];
-      };
-    };
-  };
   vars = {
     username = "christian";
     homedir = "/home/christian";
@@ -80,8 +62,6 @@ in {
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
-  system.stateVersion = "24.05"; # Did you read the comment?
-
   nix = {
     extraOptions = "experimental-features = nix-command flakes";
     settings.trusted-users = [ "root" "nixos" ];
@@ -100,18 +80,12 @@ in {
     }
   )];
 
+  system.stateVersion = "25.11"; # Did you read the comment?
+
   services.netdata.enable = true;
   services.netdata.config.statsd.enabled = "yes";
   services.netdata.config.logs.level = "warning";
   services.journald.extraConfig = ''
     SystemMaxUse=500M
-  '';
-
-  services.filebeat.enable = true;
-
-  systemd.services.filebeat.serviceConfig.ExecStart = lib.mkForce ''
-    ${pkgs.filebeat}/bin/filebeat -e \
-      -c '${pkgs.writeText "filebeat.json" filebeat_config}' \
-      --path.data '/var/lib/filebeat'
   '';
 }
