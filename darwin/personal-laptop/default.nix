@@ -8,6 +8,7 @@ vars = {
 };
 in{
   home-manager.users.christianbingman = import ../../home.nix { inherit pkgs lib vars; };
+  system.primaryUser = "christianbingman";
 
   homebrew = {
     enable = true;
@@ -28,10 +29,6 @@ in{
       }
       {
         name = "anki";
-        args = { appdir = "~/Applications"; };
-      }
-      {
-        name = "kitty";
         args = { appdir = "~/Applications"; };
       }
       {

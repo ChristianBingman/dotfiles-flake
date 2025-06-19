@@ -39,10 +39,11 @@
   # Add ability to used TouchID for sudo authentication
   security.pam.services.sudo_local.touchIdAuth = true;
 
-  system.activationScripts.postUserActivation.text = ''
-    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-    /usr/bin/automator -i ${pkgs.lib.cleanSource ../config/Background.jpg} ${pkgs.lib.cleanSource ../config/setDesktopPicture.workflow}
-  '';
+  #system.activationScripts.postUserActivation.text = ''
+  #  /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+  #  /usr/bin/automator -i ${pkgs.lib.cleanSource ../config/Background.jpg} ${pkgs.lib.cleanSource ../config/setDesktopPicture.workflow}
+  #'';
+  
 
   system.defaults.CustomUserPreferences = {
     NSGlobalDomain = {
