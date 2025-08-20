@@ -39,13 +39,17 @@ in{
         name = "karabiner-elements";
         args = { appdir = "~/Applications"; };
       }
+      {
+        name = "ghostty";
+        args = { appdir = "~/Applications"; };
+      }
     ];
   };
 
   services.skhd = {
     enable = true;
     skhdConfig = ''
-      meh - t : open ~/Applications/kitty.app
+      meh - t : open ~/Applications/ghostty.app
       meh - b : open https://search.int.christianbingman.com
     '';
   };

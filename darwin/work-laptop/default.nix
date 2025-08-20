@@ -28,15 +28,15 @@ in
         args = { appdir = "~/Applications"; };
       }
       {
-        name = "kitty";
-        args = { appdir = "~/Applications"; };
-      }
-      {
         name = "orion";
         args = { appdir = "~/Applications"; };
       }
       {
         name = "karabiner-elements";
+        args = { appdir = "~/Applications"; };
+      }
+      {
+        name = "ghostty";
         args = { appdir = "~/Applications"; };
       }
     ];
@@ -47,7 +47,7 @@ in
   services.skhd = {
     enable = true;
     skhdConfig = ''
-      meh - t : open ~/Applications/kitty.app
+      meh - t : open ~/Applications/ghostty.app
       meh - b : open https://search.christianbingman.com
     '';
   };
