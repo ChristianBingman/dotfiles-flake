@@ -10,6 +10,9 @@ vars = {
 in 
 {
   home-manager.users.cbingman = import ../../home.nix { inherit pkgs lib vars; };
+  home-manager.backupFileExtension = ".bak";
+
+  system.primaryUser = "cbingman";
 
   homebrew = {
     enable = true;
