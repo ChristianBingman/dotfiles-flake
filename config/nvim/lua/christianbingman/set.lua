@@ -30,5 +30,6 @@ vim.opt.hid = true
 vim.opt.ttyfast = true
 vim.opt.wildmode = "longest,list"
 vim.opt.mouse = ""
+vim.opt.conceallevel = 1
 
 vim.cmd([[ syntax enable ]])

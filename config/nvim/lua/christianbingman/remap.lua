@@ -23,3 +23,12 @@ vim.keymap.set("n", "<leader>bo", "<c-w>_ <c-w><bar>")
 vim.keymap.set("n", "<leader>be", "<c-w>=")
 vim.keymap.set("n", "<S-h>", ":bprev<cr>")
 vim.keymap.set("n", "<S-l>", ":bnext<cr>")
+
+--[[
+" Obsidian Maps "
+--]]
+vim.keymap.set("n", "<leader>Off", ":Obsidian quick_switch<cr>")
+vim.keymap.set("n", "<leader>O<cr>", ":Obsidian follow_link<cr>")
+vim.keymap.set("n", "<leader>OD", ":Obsidian today<cr>")
+vim.keymap.set("n", "<leader>Olg", ":Obsidian search<cr>")
+vim.keymap.set("n", "<leader>OO", ":Obsidian open<cr>")
