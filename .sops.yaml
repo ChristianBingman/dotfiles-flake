@@ -8,6 +8,7 @@ keys:
   - &kube-worker-int-2 age156cz2s38mk65g79lhv83gxe5zjfpzd7t2yxhfyewhmejej4v45rs97lrpf
   - &kube-worker-int-3 age17kh4zyu35hlkzy96axw8k05ua2pwxtxqqqkmusrcuq6cyyknsyusngxyp5
   - &northstar age1qk85kp8zkj7jxnaffsss6zu7q5upmvwfs05qpaj36zlplhz5vsvsz3cw2u
+  - &x23 age1gv7lpkyh96grmywn64f633vjmzlw2lqwqqsm447pz3wdyfgjdevq9ucqpm
 creation_rules:
   - path_regex: secrets/northstar.yaml$
     key_groups:
@@ -29,6 +30,7 @@ creation_rules:
       - age:
         - *nixos
         - *x53
+        - *x23
   - path_regex: secrets/kube-shared.yaml$
     key_groups:
       - age:
@@ -42,6 +44,7 @@ creation_rules:
       - age:
         - *nixos
         - *x53
+        - *x23
         - *kube-master-int
         - *kube-worker-int-1
         - *kube-worker-int-2

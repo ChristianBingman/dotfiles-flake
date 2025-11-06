@@ -25,7 +25,7 @@ let
     gitemail = "christianbingman@gmail.com";
   };
 in{
-  #home-manager.users.christian = import ../home.nix { inherit pkgs lib vars; };
+  home-manager.users.christian = import ../home.nix { inherit pkgs lib vars; };
     
   networking = {
     usePredictableInterfaceNames = false;

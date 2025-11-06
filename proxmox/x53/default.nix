@@ -84,6 +84,15 @@
 
     in ["${automount_opts},mfsymlinks,uid=1000,gid=100,credentials=${config.sops.templates."x53-smb-secrets".path}"];
   };
+  fileSystems."/mnt/tnpg" = {
+    device = "//ironman.christianbingman.com/DockerBackup/Kubernetes/tnpg-stack-tnpg-shared-storage-pvc-93864959-a768-4132-b11d-8f3dcf0617da";
+    fsType = "cifs";
+    options = let
+        # this line prevents hanging on network split
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+
+    in ["${automount_opts},mfsymlinks,uid=1000,gid=100,credentials=${config.sops.templates."x53-smb-secrets".path}"];
+  };
 
   services.jellyfin.enable = true;
   services.jellyfin.openFirewall = true;
@@ -114,11 +123,6 @@
         "/home/nixos/storage:/storage"
         "/home/nixos/config:/config"
       ];
-      environment = {
-        AUTO_DISC_RIPPER = "1";
-        AUTO_DISC_RIPPER_EJECT = "1";
-        MAKEMKV_KEY = "T-iyhMMBV8nWtNo3BgMdcvypH8UL01nYmww2zFzQDtiZsdJUOaAuCURsPRQ1Hj3i75RE";
-      };
       extraOptions = [
         "--device=/dev/sr0"
         "--device=/dev/sg2"

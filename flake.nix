@@ -16,6 +16,8 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    hyprland.url = "github:hyprwm/Hyprland";
     
   };
 
@@ -164,6 +166,19 @@
       modules = [
         ./proxmox
         ./proxmox/x53
+        #home-manager.nixosModules.home-manager {
+        #  home-manager.useGlobalPkgs = true;
+        #  home-manager.useUserPackages = true;
+        #}
+        sops-nix.nixosModules.sops
+      ];
+    };
+
+    nixosConfigurations.x23 = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./bare
+        ./bare/x23
         home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;

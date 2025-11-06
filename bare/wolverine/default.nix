@@ -53,12 +53,11 @@ let
     10.2.0.43 mosquitto
     # End MetalLB
     10.2.0.51 shangchi # Gaming windows VM
-    10.2.0.52 x53 # NVIDIA VM
+    10.2.0.52 x23 # Big Ol' PC
     10.2.0.53 cloak # Meraki MS350
     100.121.124.110 northstar # Remote PI
   '';
   cnames = [
-    "transmission.${domain},ironman"
     "homeassistant.${domain},iceman"
     "grafana.int.${domain},kube-int-ingress"
     "argocd.int.${domain},kube-int-ingress"
@@ -70,6 +69,8 @@ let
     "longhorn.int.${domain},kube-int-ingress"
     "time.int.${domain},kube-int-ingress"
     "photoprism.int.${domain},kube-int-ingress"
+    "js.int.${domain},kube-int-ingress"
+    "qb.int.${domain},kube-int-ingress"
   ];
   addresses = [
     "/.int.christianbingman.com/10.2.0.41"

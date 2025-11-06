@@ -27,7 +27,7 @@ cmp.setup({
 
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-local lspconfig = require('lspconfig')
+local lspconfig = vim.lsp.config()
 lspconfig.jedi_language_server.setup {
   capabilities = capabilities
 }

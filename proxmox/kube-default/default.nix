@@ -142,5 +142,8 @@ in {
     serviceConfig.StateDirectory = "filebeat-container";
     wantedBy = [ "multi-user.target" ];
   };
-  virtualisation.containerd.settings.debug.level = "warn";
+  virtualisation.containerd.settings = {
+    debug.level = "warn";
+    plugins."io.containerd.grpc.v1.cri".sandbox_image = "registry.k8s.io/pause:latest";
+  };
 }

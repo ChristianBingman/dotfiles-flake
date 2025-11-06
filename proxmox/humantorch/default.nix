@@ -15,11 +15,18 @@
     password=${config.sops.placeholder."smb/password"}
   '';
   # Use the GRUB 2 boot loader.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.grub.enable = true;
   boot.growPartition = true;
   boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
   programs.ssh.startAgent = true;
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  services.ollama = {
+    enable = true;
+    openFirewall = true;
+    acceleration = "rocm";
+  };
   networking = {
     hostName = "humantorch";
     interfaces.eth0.ipv4.addresses = [
@@ -39,6 +46,11 @@
     talosctl
     kubectl
     terraform
+    rocmPackages.rocminfo
+    rocmPackages.rocm-smi
+    rocmPackages.rocm-core
+    rocmPackages.rocmPath
+    ollama-rocm
   ];
 
   fileSystems."/" =
