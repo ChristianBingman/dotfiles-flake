@@ -221,6 +221,8 @@
       fi
     '' + lib.optionalString pkgs.stdenv.isDarwin ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
+    '' + lib.optionalString vars.meraki ''
+      export PATH="${vars.homedir}/node/bin:$PATH"
     '';
 
     plugins = [
@@ -331,6 +333,7 @@
     aerospace
   ] ++ lib.optionals (vars.meraki or false) [
     teleport
+    nodejs_24
   ] ++ lib.optionals (!(vars.meraki or false) && !stdenv.isDarwin) [
     hyprcursor
     gamescope

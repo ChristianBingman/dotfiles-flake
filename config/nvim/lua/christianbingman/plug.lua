@@ -21,4 +21,7 @@ Plug 'hrsh7th/cmp-path'
 
 Plug 'obsidian-nvim/obsidian.nvim'
 
+-- AI tools
+Plug 'github/copilot.vim'
+
 vim.call('plug#end')
