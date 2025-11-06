@@ -328,13 +328,13 @@
     hasklig
     (pass.withExtensions (ext: with ext; [pass-otp]))
 
-  ] ++ lib.optionals stdenv.isDarwin [
+  ] ++ lib.optionals pkgs.stdenv.isDarwin [
     m-cli # useful macOS CLI commands
     aerospace
   ] ++ lib.optionals (vars.meraki or false) [
     teleport
     nodejs_24
-  ] ++ lib.optionals (!(vars.meraki or false) && !stdenv.isDarwin) [
+  ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.isDarwin) [
     hyprcursor
     gamescope
     obsidian
