@@ -6,7 +6,7 @@
 
   home.stateVersion = "24.05";
 
-  wayland.windowManager.hyprland.enable = true;
+  wayland.windowManager.hyprland.enable = !pkgs.stdenv.isDarwin;
   wayland.windowManager.hyprland.settings = {
     "$mainMod" = "CTRL + ALT";
     exec-once = [
@@ -221,7 +221,7 @@
       fi
     '' + lib.optionalString pkgs.stdenv.isDarwin ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
-    '' + lib.optionalString vars.meraki ''
+    '' + lib.optionalString (vars.meraki or false) ''
       export PATH="${vars.homedir}/node/bin:$PATH"
     '';
 
