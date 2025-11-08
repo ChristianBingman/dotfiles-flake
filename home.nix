@@ -34,22 +34,32 @@
       "no_donation_nag" = "true";
     };
     binde = [
-      "$mainMod, N, resizeactive, 10 0"
-      "$mainMod, E, resizeactive, -10 0"
+      "$mainMod, E, resizeactive, 20 0"
+      "$mainMod, N, resizeactive, -20 0"
     ];
     bind = [
       "$mainMod, B, exec, ${pkgs.firefox}/bin/firefox"
       "$mainMod, T, exec, ${pkgs.ghostty}/bin/ghostty"
-      "$mainMod, 1, workspace, 1"
-      "$mainMod, 2, workspace, 2"
+      "SUPER, code:65, exec, ${pkgs.rofi}/bin/rofi -show drun"
 
       "$mainMod, M, layoutmsg, cycleprev"
       "$mainMod, I, layoutmsg, cyclenext"
       "$mainMod, O, layoutmsg, swapwithmaster"
-      "$mainMod, F, fullscreen, 1"
+
+      "CTRL+ALT+SHIFT, A, layoutmsg, addmaster"
+      "CTRL+ALT+SHIFT, S, layoutmsg, removemaster"
+
+      "$mainMod, Y, workspace, +1"
+      "$mainMod, L, workspace, -1"
+
+      "$mainMod, Z, layoutmsg, orientationleft"
+      "$mainMod, X, layoutmsg, orientationcenter"
+      "$mainMod, C, layoutmsg, orientationright"
+
+      "SUPER, F, fullscreen, 1"
+      "$mainMod, F, togglefloating,"
       "SUPER, W, killactive"
       "SUPER, Q, forcekillactive"
-      "SUPER, code:65, exec, ${pkgs.rofi}/bin/rofi -show drun"
     ] ++ (
       # workspaces
       # binds $mod + [shift +] {1..9} to [move to] workspace {1..9}
