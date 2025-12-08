@@ -42,6 +42,10 @@ in
         name = "ghostty";
         args = { appdir = "~/Applications"; };
       }
+      {
+        name = "codex";
+        args = { appdir = "~/Applications"; };
+      }
     ];
   };
 
