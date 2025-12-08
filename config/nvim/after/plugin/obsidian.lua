@@ -17,5 +17,14 @@ require("obsidian").setup({
       path = "~/Documents/Obsidian/Projects"
     },
   },
+  daily_notes = {
+    folder = "Daily Notes",
+    template = "Daily Note Template",
+    date_format = "%Y-%m-%d",
+  },
+  templates = {
+    folder = "Templates",
+  },
+  new_notes_location = "Notes",
   legacy_commands = false,
 })
