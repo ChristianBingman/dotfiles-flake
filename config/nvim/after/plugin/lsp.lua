@@ -34,3 +34,14 @@ vim.lsp.config.jedi_language_server = {
 vim.lsp.config.clangd = {
   capabilities = capabilities
 }
+
+require("copilot").setup {
+  auto_trigger = true,
+  filetypes = {
+    ruby = true, -- allow specific filetype
+    python = true, -- allow specific filetype
+    nix = true, -- allow specific filetype
+    lua = true, -- allow specific filetype
+    ["*"] = false, -- disable for all other filetypes and ignore default `filetypes`
+  },
+}
