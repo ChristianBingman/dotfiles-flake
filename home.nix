@@ -344,6 +344,7 @@
   ] ++ lib.optionals (vars.meraki or false) [
     teleport
     nodejs_24
+    ollama
   ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.isDarwin) [
     hyprcursor
     gamescope
