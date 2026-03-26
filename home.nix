@@ -4,7 +4,7 @@
   home.username = vars.username;
   home.homeDirectory = vars.homedir;
 
-  home.stateVersion = "24.05";
+  home.stateVersion = "25.11";
 
   wayland.windowManager.hyprland.enable = !pkgs.stdenv.isDarwin;
   wayland.windowManager.hyprland.settings = {
@@ -198,8 +198,8 @@
 
   programs.git = {
     enable = true;
-    userName = vars.gituser;
-    userEmail = vars.gitemail;
+    settings.user.name = vars.gituser;
+    settings.user.email = vars.gitemail;
   };
 
   programs.neovim = {
@@ -214,7 +214,7 @@
     enableCompletion = true;
     oh-my-zsh.enable = true;
 
-    initExtra = ''
+    initContent = ''
       export PATH="${vars.homedir}/.local/usr/bin:$PATH"
       eval $(gpg-agent --daemon 2> /dev/null)
     '' + lib.optionalString (!vars.meraki or true) ''
