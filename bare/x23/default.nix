@@ -53,12 +53,12 @@ in{
   programs.steam.package = pkgs.steam.override {
     extraPkgs = pkgs: [ pkgs.libsForQt5.qt5.qtmultimedia ];
   };
-  systemd.sleep.extraConfig = ''
-    AllowSuspend=no
-    AllowHibernation=no
-    AllowHybridSleep=no
-    AllowSuspendThenHibernate=no
-  '';
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = "no";
+    AllowHibernation = "no";
+    AllowHybridSleep = "no";
+    AllowSuspendThenHibernate = "no";
+  };
   services.xserver.enable = true;
   services.xserver.videoDrivers = [ "amdgpu" ];
   boot.kernelParams = [ "nohibernate" "amd_iommu=on" "iommu=pt" "pcie_acs_override=downstream,multifunction" ];
@@ -316,7 +316,7 @@ in{
   services.ollama = {
     enable = true;
     openFirewall = true;
-    acceleration = "rocm";
+    package = pkgs.ollama-rocm;
     host = "0.0.0.0";
     loadModels = ["gpt-oss:20b"];
     rocmOverrideGfx = "11.0.0";
