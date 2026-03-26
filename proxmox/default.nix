@@ -43,8 +43,6 @@ in{
       ./hardware-configuration.nix
     ];
 
-  home-manager.users.christian = import ../home.nix { inherit pkgs lib vars; };
-    
   networking = {
     usePredictableInterfaceNames = false;
     defaultGateway = "10.2.0.1";

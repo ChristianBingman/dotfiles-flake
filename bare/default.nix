@@ -1,23 +1,5 @@
 { config, lib, pkgs, home-manager, ... }:
 let
-  filebeat_config = builtins.toJSON {
-    filebeat = {
-      inputs = [
-        {
-          type = "journald";
-          id = "everything";
-        }
-      ];
-    };
-    logging = {
-      level = "warning";
-    };
-    output = {
-      logstash = {
-        hosts = [ "logstash.christianbingman.com:5044" ];
-      };
-    };
-  };
   vars = {
     username = "christian";
     homedir = "/home/christian";
@@ -25,7 +7,7 @@ let
     gitemail = "christianbingman@gmail.com";
   };
 in{
-  home-manager.users.christian = import ../home.nix { inherit pkgs lib vars; };
+  nixpkgs.config.allowUnfree = true;
     
   networking = {
     usePredictableInterfaceNames = false;
@@ -86,15 +68,8 @@ in{
 
   services.netdata.enable = true;
   services.netdata.config.statsd.enabled = "yes";
+  services.netdata.package = pkgs.netdata.override {withCloudUi = true;};
   services.journald.extraConfig = ''
     SystemMaxUse=500M
-  '';
-
-  services.filebeat.enable = lib.mkDefault true;
-
-  systemd.services.filebeat.serviceConfig.ExecStart = lib.mkForce ''
-    ${pkgs.filebeat}/bin/filebeat -e \
-      -c '${pkgs.writeText "filebeat.json" filebeat_config}' \
-      --path.data '/var/lib/filebeat'
   '';
 }

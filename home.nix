@@ -84,10 +84,6 @@
     #    };
     #  };
     #};
-    monitor = [
-      "HDMI-A-1, disable"
-      "HDMI-A-2,2560x1600@60,auto,auto"
-    ];
   };
 
   xdg.configFile.nvim = {

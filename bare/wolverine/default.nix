@@ -51,6 +51,7 @@ let
     10.2.0.40 elasticsearch-int
     10.2.0.41 kube-int-ingress
     10.2.0.43 mosquitto
+    10.2.0.44 registry.int.${domain}
     # End MetalLB
     10.2.0.51 shangchi # Gaming windows VM
     10.2.0.52 x23 # Big Ol' PC
@@ -71,6 +72,10 @@ let
     "photoprism.int.${domain},kube-int-ingress"
     "js.int.${domain},kube-int-ingress"
     "qb.int.${domain},kube-int-ingress"
+    "ta.int.${domain},kube-int-ingress"
+    "finance.int.${domain},kube-int-ingress"
+    "privatebalance.int.${domain},kube-int-ingress"
+    "immich.int.${domain},kube-int-ingress"
   ];
   addresses = [
     "/.int.christianbingman.com/10.2.0.41"
@@ -81,6 +86,35 @@ in {
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
   sops.age.generateKey = true;
   sops.secrets.ts-authkey = {};
+  sops.secrets.wg-private-key = {};
+  networking.wireguard = {
+    enable = true;
+    interfaces.wg0 = {
+      ips = [
+        "10.3.0.1/24"
+      ];
+      listenPort = 51820;
+      postSetup = ''
+        ${pkgs.iptables}/bin/iptables -A FORWARD -i wg0 -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o eth0 -j MASQUERADE
+      '';
+      postShutdown = ''
+        ${pkgs.iptables}/bin/iptables -D FORWARD -i wg0 -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.3.0.0/24 -o eth0 -j MASQUERADE
+      '';
+      privateKeyFile = config.sops.secrets.wg-private-key.path;
+      peers = [
+        {
+          publicKey = "ILXzrC4zH0wfXn8iqUEyjiAiYYbvCq1fj+pcTQUBZAM=";
+          allowedIPs = [ "10.3.0.2/32" ];
+        }
+        {
+          publicKey = "CNQoFE11Lsw1D+i63ch7YGny0D4E2H6hTPI9RTaGIAo=";
+          allowedIPs = [ "10.3.0.3/32" ];
+        }
+      ];
+    };
+  };
   boot.kernel.sysctl = {
     # if you use ipv4, this is all you need
     "net.ipv4.conf.all.forwarding" = true;
@@ -105,7 +139,17 @@ in {
   networking = {
     hostName = "${hostname}";
     enableIPv6 = true;
+    vlans = {
+      guest0 = { id=100; interface="${lan_interface}"; };
+    };
     interfaces."${wan_interface}".useDHCP = true;
+
+    interfaces.guest0.ipv4.addresses = [
+      {
+        prefixLength = 24;
+        address = "10.5.0.1";
+      }
+    ];
 
     interfaces."${lan_interface}" = {
       useDHCP = false;
@@ -128,8 +172,13 @@ in {
       allowPing = true;
       # Remove this line
       interfaces.eth0.allowedTCPPorts = [ 22 ];
+      interfaces.eth0.allowedUDPPorts = [ 51820 ];
       interfaces.eth1.allowedTCPPorts = [ 22 53 9162 19999 61208 ];
       interfaces.eth1.allowedUDPPorts = [ 67 68 53 546 547 ];
+      interfaces.wg0.allowedUDPPorts = [ 53 ];
+      interfaces.wg0.allowedTCPPorts = [ 53 ];
+      interfaces.tun0.allowedTCPPorts = [ 26864 ];
+      interfaces.tun0.allowedUDPPorts = [ 26864 ];
       extraCommands = ''
         iptables -t nat -A POSTROUTING -o ${wan_interface} -j MASQUERADE
         iptables -A FORWARD -i ${wan_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
@@ -138,6 +187,22 @@ in {
         iptables -t nat -A POSTROUTING -o ${tailscale_interface} -j MASQUERADE
         iptables -A FORWARD -i ${tailscale_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
         iptables -A FORWARD -i ${lan_interface} -o ${tailscale_interface}
+
+        iptables -t nat -A POSTROUTING -o guest0 -j MASQUERADE
+        iptables -A FORWARD -i ${wan_interface} -o guest0 -m conntrack --ctstate RELATED,ESTABLISHED
+        iptables -A FORWARD -i guest0 -o ${wan_interface}
+
+        ip6tables -t nat -A POSTROUTING -o ${wan_interface} -j MASQUERADE
+        ip6tables -A FORWARD -i ${wan_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
+        ip6tables -A FORWARD -i ${lan_interface} -o ${wan_interface}
+
+        ip6tables -t nat -A POSTROUTING -o ${tailscale_interface} -j MASQUERADE
+        ip6tables -A FORWARD -i ${tailscale_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
+        ip6tables -A FORWARD -i ${lan_interface} -o ${tailscale_interface}
+
+        ip6tables -t nat -A POSTROUTING -o guest0 -j MASQUERADE
+        ip6tables -A FORWARD -i ${wan_interface} -o guest0 -m conntrack --ctstate RELATED,ESTABLISHED
+        ip6tables -A FORWARD -i guest0 -o ${wan_interface}
         '';
     };
 

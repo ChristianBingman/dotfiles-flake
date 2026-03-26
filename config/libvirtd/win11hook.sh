@@ -55,6 +55,7 @@ detach_devices() {
 
     
     echo "Devices detached and ready for passthrough"
+    sleep 5
 
     if ! modprobe -r amdgpu; then
       echo "WARNING: Unable to unload amdgpu driver since it is still in use!"
