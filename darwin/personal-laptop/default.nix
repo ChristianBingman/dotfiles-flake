@@ -12,7 +12,7 @@ in{
 
   homebrew = {
     enable = true;
-    brewPrefix = "/opt/homebrew/bin";
+    prefix = "/opt/homebrew";
     onActivation.autoUpdate = true;
     onActivation.cleanup = "zap";
     brews = [
