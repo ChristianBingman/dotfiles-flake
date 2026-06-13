@@ -2,7 +2,7 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, home-manager, ... }:
+{ config, lib, pkgs, home-manager, inputs, ... }:
 let
   vars = {
     username = "christian";
@@ -31,7 +31,7 @@ in{
     vmName = "win11";
     openFirewall = true;
   };
-  home-manager.users.christian = import ../../home.nix { inherit pkgs lib vars; };
+  home-manager.users.christian = import ../../home.nix { inherit pkgs lib vars inputs; };
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

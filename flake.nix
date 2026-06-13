@@ -200,6 +200,7 @@
 
     nixosConfigurations.x23 = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
       modules = [
         ./bare
         ./bare/x23

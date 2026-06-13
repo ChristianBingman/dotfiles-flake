@@ -27,8 +27,9 @@
       "layout" = "master";
     };
     input = {
-      "kb_layout" = "us";
-      "kb_variant" = "colemak_dh_ortho";
+      "kb_layout" = "us,us";
+      "kb_variant" = "colemak_dh_ortho,us";
+      "kb_options" = "grp:alt_space_toggle";
       "touchpad" = {
         "natural_scroll" = true;
       };
@@ -91,8 +92,8 @@
     );
     windowrule = {
       name = "steam-game";
-      "match:class" = "\"^(steam_app.*)$\"";
-      opacity = "1.0 1.0";
+      "match:class" = "^(steam_app.*)";
+      opaque = "on";
     };
     #submaps = {
     #  resize = {
