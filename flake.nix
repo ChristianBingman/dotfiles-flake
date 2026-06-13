@@ -18,6 +18,13 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprland.url = "github:hyprwm/Hyprland";
+    zen-browser = {
+    url = "github:0xc000022070/zen-browser-flake";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
     
   };
 
@@ -39,6 +46,15 @@
       user = "christian";
       home = "/home/christian";
     };
+
+    meraki_vars = {
+      username = "cbingman";
+      homedir = "/home/cbingman";
+      gituser = "christia";
+      gitemail = "christian.bingman@meraki.net";
+      meraki = true;
+    };
+
 
     # Configuration for `nixpkgs`
     nixpkgsConfig = {
@@ -64,6 +80,14 @@
         inherit inputs nixpkgs home-manager darwin nixpkgsConfig mac_vars;
       }
     );
+    homeConfigurations.cbingman = home-manager.lib.homeManagerConfiguration {
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
+      extraSpecialArgs = { inherit inputs; vars = meraki_vars; };
+      modules = [ ./home.nix ];
+    };
 
     nixosModules.proxmox = {config, ...}: {
       imports = [

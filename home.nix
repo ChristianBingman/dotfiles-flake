@@ -1,5 +1,14 @@
-{ pkgs, lib, vars, ... }:
+{ pkgs, lib, vars, inputs, ... }:
 {
+
+  imports = [
+    inputs.zen-browser.homeModules.beta
+  ];
+
+  programs.zen-browser = {
+    enable = true;
+    setAsDefaultBrowser = true;
+  };
   programs.home-manager.enable = true;
   home.username = vars.username;
   home.homeDirectory = vars.homedir;
@@ -16,6 +25,13 @@
     general = {
       "gaps_out" = "5";
       "layout" = "master";
+    };
+    input = {
+      "kb_layout" = "us";
+      "kb_variant" = "colemak_dh_ortho";
+      "touchpad" = {
+        "natural_scroll" = true;
+      };
     };
     decoration = {
       "rounding" = "10";
@@ -34,6 +50,7 @@
       "no_donation_nag" = "true";
     };
     binde = [
+      "$mainMod SHIFT, Q, exit"
       "$mainMod, E, resizeactive, 20 0"
       "$mainMod, N, resizeactive, -20 0"
     ];
@@ -323,6 +340,14 @@
     source = pkgs.lib.cleanSource ./config/Background.jpg;
   };
 
+  
+  targets.genericLinux = {
+    enable = true;
+    gpu = {
+      enable = true;
+    };
+  };
+
   home.packages = with pkgs; [
     # Some basics
     coreutils
@@ -332,6 +357,7 @@
     ripgrep
     gnupg
     hasklig
+    ghostty
     (pass.withExtensions (ext: with ext; [pass-otp]))
 
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
@@ -341,6 +367,9 @@
     teleport
     nodejs_24
     ollama
+    slack
+    hyprcursor
+    obsidian
   ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.isDarwin) [
     hyprcursor
     gamescope
