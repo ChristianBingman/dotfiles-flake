@@ -80,6 +80,28 @@ let
   addresses = [
     "/.int.christianbingman.com/10.2.0.41"
   ];
+
+  # Guest VLAN (guest0, id=100) settings for the dedicated dnsmasq instance.
+  guest_interface = "guest0";
+  guest_ip = "10.5.0.1";
+  guest_domain = "guest.${domain}";
+  guest_dhcp_range = "10.5.0.75,10.5.0.254,255.255.255.0,6h";
+  guest_lease_dir = "/var/lib/dnsmasq-guest";
+  guest_dnsmasq_conf = pkgs.writeText "dnsmasq-guest.conf" ''
+    interface=${guest_interface}
+    bind-interfaces
+    dhcp-range=${guest_dhcp_range}
+    dhcp-authoritative
+    dhcp-lease-max=100
+    dhcp-leasefile=${guest_lease_dir}/dnsmasq.leases
+    dhcp-option=option:router,${guest_ip}
+    dhcp-option=option:dns-server,${guest_ip}
+    ${lib.concatMapStringsSep "\n" (s: "server=${s}") dns_servers}
+    no-resolv
+    no-hosts
+    domain=${guest_domain}
+    cache-size=150
+  '';
 in {
   sops.defaultSopsFile = ../../secrets/wolverine.yaml;
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
@@ -175,6 +197,8 @@ in {
       interfaces.eth0.allowedUDPPorts = [ 51820 ];
       interfaces.eth1.allowedTCPPorts = [ 22 53 9162 19999 61208 ];
       interfaces.eth1.allowedUDPPorts = [ 67 68 53 546 547 ];
+      interfaces.guest0.allowedTCPPorts = [ 53 ];
+      interfaces.guest0.allowedUDPPorts = [ 67 68 53 ];
       interfaces.wg0.allowedUDPPorts = [ 53 ];
       interfaces.wg0.allowedTCPPorts = [ 53 ];
       interfaces.tun0.allowedTCPPorts = [ 26864 ];
@@ -233,6 +257,36 @@ in {
       cname = cnames;
       address = addresses;
     };
+  };
+
+  # Second, independent dnsmasq instance dedicated to the guest VLAN (guest0).
+  # The NixOS services.dnsmasq module only manages a single instance, so the
+  # guest server is run as its own systemd unit. It reuses the dnsmasq system
+  # user/group created by the module above, runs without dbus (to avoid a
+  # bus-name clash with the main instance), and keeps a separate lease file.
+  systemd.services.dnsmasq-guest = {
+    description = "Dnsmasq Daemon (guest VLAN)";
+    after = [
+      "network.target"
+      "sys-subsystem-net-devices-${guest_interface}.device"
+    ];
+    wantedBy = [ "multi-user.target" ];
+    path = [ config.services.dnsmasq.package ];
+    preStart = ''
+      mkdir -m 755 -p ${guest_lease_dir}
+      touch ${guest_lease_dir}/dnsmasq.leases
+      chown -R dnsmasq ${guest_lease_dir}
+      dnsmasq --test -C ${guest_dnsmasq_conf}
+    '';
+    serviceConfig = {
+      ExecStart = "${config.services.dnsmasq.package}/bin/dnsmasq -k --user=dnsmasq -C ${guest_dnsmasq_conf}";
+      ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
+      PrivateTmp = true;
+      ProtectSystem = true;
+      ProtectHome = true;
+      Restart = "on-failure";
+    };
+    restartTriggers = [ guest_dnsmasq_conf ];
   };
 
   services.tailscale = {
