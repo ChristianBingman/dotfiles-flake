@@ -24,6 +24,7 @@ in
     };
     brews = [
       "pinentry-mac"
+      "krew"
     ];
     casks = [
       {
