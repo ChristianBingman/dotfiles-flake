@@ -117,7 +117,7 @@ in{
           output = "/home/christian/sunshine-output.txt";
           prep-cmd = [
             {
-              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-0,1920x1080@60,auto,1";
+              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-1,1920x1080@60,auto,1";
             }
           ];
           detached = [
@@ -131,7 +131,7 @@ in{
           output = "/home/christian/sunshine-output.txt";
           prep-cmd = [
             {
-              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-0,3840x2160@60,auto,1";
+              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-1,3840x2160@60,auto,1";
             }
           ];
           detached = [
@@ -145,7 +145,7 @@ in{
           output = "/home/christian/sunshine-output.txt";
           prep-cmd = [
             {
-              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-0,3440x1440@90,auto,1.25";
+              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-1,3440x1440@90,auto,1.25";
             }
           ];
           exclude-global-prep-cmd = "false";
@@ -156,7 +156,7 @@ in{
           output = "/home/christian/sunshine-output.txt";
           prep-cmd = [
             {
-              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-0,2560x1600@60,auto,1.25";
+              do = "${pkgs.util-linux}/bin/setsid ${pkgs.hyprland}/bin/hyprctl -i 0 keyword monitor HDMI-A-1,2560x1600@60,auto,1.25";
             }
           ];
           exclude-global-prep-cmd = "false";
@@ -314,7 +314,7 @@ in{
   ];
 
   services.ollama = {
-    enable = true;
+    enable = false;
     openFirewall = true;
     package = pkgs.ollama-rocm;
     host = "0.0.0.0";

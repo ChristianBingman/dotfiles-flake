@@ -89,6 +89,11 @@
         )
         9)
     );
+    windowrule = {
+      name = "steam-game";
+      "match:class" = "\"^(steam_app.*)$\"";
+      opacity = "1.0 1.0";
+    };
     #submaps = {
     #  resize = {
     #    settings = {
