@@ -89,6 +89,7 @@ let
   guest_lease_dir = "/var/lib/dnsmasq-guest";
   guest_dnsmasq_conf = pkgs.writeText "dnsmasq-guest.conf" ''
     interface=${guest_interface}
+    except-interface=lo
     bind-interfaces
     dhcp-range=${guest_dhcp_range}
     dhcp-authoritative
