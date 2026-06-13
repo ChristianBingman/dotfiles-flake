@@ -32,7 +32,7 @@ in{
         args = { appdir = "~/Applications"; };
       }
       {
-        name = "orion";
+        name = "zen";
         args = { appdir = "~/Applications"; };
       }
       {
