@@ -290,8 +290,6 @@ in{
   services.jellyfin.enable = true;
   services.jellyfin.openFirewall = true;
   environment.systemPackages = with pkgs; [
-    hyprpaper
-    whitesur-cursors
     dmidecode
     # Non-KDE graphical packages
     hardinfo2 # System information and benchmarks for Linux systems

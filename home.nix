@@ -1,8 +1,18 @@
 { pkgs, lib, vars, inputs, ... }:
+let
+  gdmStartHyprland = pkgs.writeShellScriptBin "gdm-start-hyprland" ''
+    export PATH="${vars.homedir}/.nix-profile/bin:${vars.homedir}/nix/profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+    export XDG_DATA_DIRS="${vars.homedir}/.nix-profile/share:${vars.homedir}/.local/state/nix/profile/share:/nix/var/nix/profiles/default/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+    exec "${vars.homedir}/.nix-profile/bin/start-hyprland"
+  '';
+in
 {
 
   imports = [
     inputs.zen-browser.homeModules.beta
+    ./modules/home/hyprland.nix
   ];
 
   programs.zen-browser = {
@@ -15,98 +25,100 @@
 
   home.stateVersion = "25.11";
 
-  wayland.windowManager.hyprland.enable = !pkgs.stdenv.isDarwin;
-  wayland.windowManager.hyprland.settings = {
-    "$mainMod" = "CTRL + ALT";
-    exec-once = [
-      "${pkgs.hyprpaper}/bin/hyprpaper"
-      "${pkgs.nwg-look}/bin/nwg-look -a"
-    ];
-    general = {
-      "gaps_out" = "5";
-      "layout" = "master";
-    };
-    input = {
-      "kb_layout" = "us,us";
-      "kb_variant" = "colemak_dh_ortho,us";
-      "kb_options" = "grp:alt_space_toggle";
-      "touchpad" = {
-        "natural_scroll" = true;
-      };
-    };
-    decoration = {
-      "rounding" = "10";
-      "inactive_opacity" = "0.75";
-      "fullscreen_opacity" = "0.95";
-      blur = {
-        "xray" = "true";
-      };
-    };
-    cursor = {
-      "inactive_timeout" = "10";
-      "persistent_warps" = "true";
-      "hide_on_key_press" = "true";
-    };
-    ecosystem = {
-      "no_donation_nag" = "true";
-    };
-    binde = [
-      "$mainMod SHIFT, Q, exit"
-      "$mainMod, E, resizeactive, 20 0"
-      "$mainMod, N, resizeactive, -20 0"
-    ];
-    bind = [
-      "$mainMod, B, exec, ${pkgs.firefox}/bin/firefox"
-      "$mainMod, T, exec, ${pkgs.ghostty}/bin/ghostty"
-      "SUPER, code:65, exec, ${pkgs.rofi}/bin/rofi -show drun"
+  #gtk = lib.mkIf (!pkgs.stdenv.isDarwin) {
+  #  enable = true;
+  #};
 
-      "$mainMod, M, layoutmsg, cycleprev"
-      "$mainMod, I, layoutmsg, cyclenext"
-      "$mainMod, O, layoutmsg, swapwithmaster"
+  services.dunst.enable = true;
+  services.dunst.settings = {
+    global = {
+      monitor = 0;
+      follow = "mouse";
 
-      "CTRL+ALT+SHIFT, A, layoutmsg, addmaster"
-      "CTRL+ALT+SHIFT, S, layoutmsg, removemaster"
+      width = 360;
+      height = 300;
+      origin = "top-right";
+      offset = "16x48";
 
-      "$mainMod, Y, workspace, +1"
-      "$mainMod, L, workspace, -1"
+      notification_limit = 5;
 
-      "$mainMod, Z, layoutmsg, orientationleft"
-      "$mainMod, X, layoutmsg, orientationcenter"
-      "$mainMod, C, layoutmsg, orientationright"
+      progress_bar = true;
+      progress_bar_height = 8;
+      progress_bar_frame_width = 0;
+      progress_bar_min_width = 150;
+      progress_bar_max_width = 300;
 
-      "SUPER, F, fullscreen, 1"
-      "$mainMod, F, togglefloating,"
-      "SUPER, W, killactive"
-      "SUPER, Q, forcekillactive"
-    ] ++ (
-      # workspaces
-      # binds $mod + [shift +] {1..9} to [move to] workspace {1..9}
-      builtins.concatLists (builtins.genList (i:
-          let ws = i + 1;
-          in [
-            "$mainMod, code:1${toString i}, workspace, ${toString ws}"
-            "$mainMod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
-          ]
-        )
-        9)
-    );
-    windowrule = {
-      name = "steam-game";
-      "match:class" = "^(steam_app.*)";
-      opaque = "on";
+      indicate_hidden = true;
+      transparency = 8;
+      separator_height = 8;
+      padding = 14;
+      horizontal_padding = 16;
+      text_icon_padding = 12;
+
+      frame_width = 2;
+      frame_color = "#89b4fa";
+
+      corner_radius = 12;
+      gap_size = 10;
+
+      font = "Hasklig 10";
+      line_height = 4;
+
+      markup = "full";
+      format = "<b>%s</b>\\n%b";
+      alignment = "left";
+      vertical_alignment = "center";
+
+      show_age_threshold = 60;
+      ellipsize = "middle";
+      ignore_newline = false;
+      stack_duplicates = true;
+      hide_duplicate_count = false;
+      show_indicators = true;
+
+      icon_position = "left";
+      min_icon_size = 32;
+      max_icon_size = 48;
+
+      sticky_history = true;
+      history_length = 20;
+
+      browser = "${pkgs.xdg-utils}/bin/xdg-open";
+      always_run_script = true;
+      title = "Dunst";
+      class = "Dunst";
+      ignore_dbusclose = false;
+      force_xinerama = false;
+
+      mouse_left_click = "close_current";
+      mouse_middle_click = "do_action, close_current";
+      mouse_right_click = "close_all";
     };
-    #submaps = {
-    #  resize = {
-    #    settings = {
-    #      binde = [
-    #        
-    #      ];
-    #      bind = [
-    #        ", escape, submap, reset"
-    #      ];
-    #    };
-    #  };
-    #};
+
+    experimental = {
+      per_monitor_dpi = false;
+    };
+
+    urgency_low = {
+      background = "#1e1e2e";
+      foreground = "#cdd6f4";
+      frame_color = "#45475a";
+      timeout = 4;
+    };
+
+    urgency_normal = {
+      background = "#1e1e2e";
+      foreground = "#cdd6f4";
+      frame_color = "#89b4fa";
+      timeout = 6;
+    };
+
+    urgency_critical = {
+      background = "#1e1e2e";
+      foreground = "#f38ba8";
+      frame_color = "#f38ba8";
+      timeout = 0;
+    };
   };
 
   xdg.configFile.nvim = {
@@ -211,7 +223,7 @@
 
       set-option -g status-right-style none
       set -g status-right-length 150
-      set -g status-right '#[fg=color238] #[fg=color181,bg=color238] #[fg=color181,bg=color238]%Y-%m-%d | %H:%M #[fg=color235,bg=color108,bold] #h '
+      set -g status-right '#[fg=color238] #[fg=color181,bg=color238] #[fg=color181,bg=color238]%Y-%m-%d | %H:%M | #(cat /sys/class/power_supply/BAT0/capacity)% #[fg=color235,bg=color108,bold] #h '
 
       set -g window-status-separator '#[fg=color247,bg=color236] '
       set -g window-status-format "#[fg=color8,bg=color236] #I | #[fg=color8,bg=color236]#W  "
@@ -251,7 +263,7 @@
     '' + lib.optionalString pkgs.stdenv.isDarwin ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
     '' + lib.optionalString (vars.meraki or false) ''
-      export PATH="${vars.homedir}/node/bin:$PATH"
+      export PATH="''${KREW_ROOT:-$HOME/.krew}/bin:${vars.homedir}/node/bin:$PATH"
     '';
 
     plugins = [
@@ -318,7 +330,7 @@
 
   home.file.".gnupg/gpg-agent.conf" = {
     text = ''
-      pinentry-program /opt/homebrew/bin/pinentry-mac
+      pinentry-program ${pkgs.pinentry-rofi}/bin/pinentry-rofi
       default-cache-ttl 600
       max-cache-ttl 7200
     '' + lib.optionalString (!vars.meraki or true) ''
@@ -340,6 +352,14 @@
 
   home.file.".config/hypr/hyprpaper.conf" = {
     source = pkgs.lib.cleanSource ./config/hypr/hyprpaper.conf;
+  };
+
+  home.file.".config/hypr/hypridle.conf" = {
+    source = pkgs.lib.cleanSource ./config/hypr/hypridle.conf;
+  };
+
+  home.file.".swaylock/config" = {
+    source = pkgs.lib.cleanSource ./config/swaylock/config;
   };
 
   home.file."Background.jpg" = {
@@ -376,6 +396,14 @@
     slack
     hyprcursor
     obsidian
+    gdmStartHyprland
+    wl-clipboard
+    codex
+    hypridle
+    brightnessctl
+    kubectl
+    krew
+    papirus-icon-theme
   ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.isDarwin) [
     hyprcursor
     gamescope
