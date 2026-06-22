@@ -61,7 +61,7 @@ in
       );
       input = {
         "kb_layout" = "us";
-        "kb_variant" = "colemak_dh_ortho";
+        "kb_variant" = "";
         "kb_options" = "caps:escape";
         "touchpad" = {
           "natural_scroll" = true;
@@ -69,21 +69,13 @@ in
           "clickfinger_behavior" = true;
           "tap-to-click" = false;
         };
+        "resolve_binds_by_sym" = 1;
       };
       device = [
         {
-          "name" = "foostan-corne";
+          "name" = "at-translated-set-2-keyboard";
           "kb_layout" = "us";
-          "kb_variant" = "";
-        }
-        {
-          "name" = "foostan-corne-keyboard";
-          "kb_layout" = "us";
-          "kb_variant" = "";
-        }
-        {
-          "name" = "logitech-g305";
-          "natural_scroll" = false;
+          "kb_variant" = "colemak_dh_ortho";
         }
       ];
       decoration = {
