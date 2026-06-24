@@ -121,6 +121,8 @@ in
 
         ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_SINK@ toggle"
         ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_SOURCE@ toggle"
+        ", Print, exec, ${pkgs.bash}/bin/bash -lc \"${pkgs.grim}/bin/grim -o \\\"$(${pkgs.hyprland}/bin/hyprctl monitors -j | ${pkgs.jq}/bin/jq -r '.[] | select(.focused) | .name')\\\" - | ${pkgs.wl-clipboard}/bin/wl-copy --type image/png && ${pkgs.libnotify}/bin/notify-send 'Screenshot captured' 'Focused monitor copied to clipboard'\""
+        "SHIFT, Print, exec, ${pkgs.bash}/bin/bash -lc \"${pkgs.grim}/bin/grim -g \\\"$(${pkgs.slurp}/bin/slurp)\\\" - | ${pkgs.wl-clipboard}/bin/wl-copy --type image/png && ${pkgs.libnotify}/bin/notify-send 'Screenshot captured' 'Selection copied to clipboard'\""
 
         "$mainMod, Y, workspace, +1"
         "$mainMod, L, workspace, -1"
