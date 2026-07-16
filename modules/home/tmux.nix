@@ -24,6 +24,7 @@
 
       # Mouse works as expected
       set-option -g mouse on
+      set-window-option -g mode-keys vi
       # easy-to-remember split pane commands
       bind | split-window -h -c "#{pane_current_path}"
       bind - split-window -v -c "#{pane_current_path}"

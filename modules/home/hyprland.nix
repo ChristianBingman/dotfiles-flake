@@ -28,6 +28,7 @@ in
         "${pkgs.hyprpaper}/bin/hyprpaper"
         "${pkgs.nwg-look}/bin/nwg-look -a"
         "${pkgs.hypridle}/bin/hypridle"
+        "${pkgs.waybar}/bin/waybar"
         "gsettings set org.gnome.desktop.interface color-scheme \"prefer-dark\""
         "gsettings set org.gnome.desktop.interface gtk-theme \"adw-gtk3\""
       ];

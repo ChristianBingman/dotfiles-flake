@@ -14,9 +14,12 @@ in
     inputs.zen-browser.homeModules.beta
     ./modules/home/dunst.nix
     ./modules/home/hyprland.nix
+    ./modules/home/rofi.nix
     ./modules/home/tmux.nix
+    ./modules/home/waybar.nix
   ];
 
+  fonts.fontconfig.enable = true;
   programs.zen-browser = {
     enable = true;
     setAsDefaultBrowser = true;
@@ -188,6 +191,7 @@ in
     ripgrep
     gnupg
     hasklig
+    nerd-fonts.hasklug
     ghostty
     (pass.withExtensions (ext: with ext; [pass-otp]))
 
