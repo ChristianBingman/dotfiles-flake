@@ -18,6 +18,7 @@ in
 
   wayland.windowManager.hyprland = {
     enable = !pkgs.stdenv.isDarwin;
+    configType = "hyprlang";
     settings = {
       "$mainMod" = "CTRL + ALT";
       env = [

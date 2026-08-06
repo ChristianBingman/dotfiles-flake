@@ -28,7 +28,7 @@ in
   home.username = vars.username;
   home.homeDirectory = vars.homedir;
 
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
 
   #gtk = lib.mkIf (!pkgs.stdenv.isDarwin) {
   #  enable = true;
@@ -44,6 +44,8 @@ in
     settings.user.name = vars.gituser;
     settings.user.email = vars.gitemail;
   };
+
+  home.pointerCursor.enable = true;
 
   programs.neovim = {
     enable = true;

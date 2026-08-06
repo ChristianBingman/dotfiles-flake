@@ -64,7 +64,7 @@ in
         icon_position = "left";
         min_icon_size = 32;
         max_icon_size = 48;
-        icon_path = iconPath;
+        icon_path = lib.mkForce iconPath;
 
         sticky_history = true;
         history_length = 20;
