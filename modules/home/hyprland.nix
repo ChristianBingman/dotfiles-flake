@@ -1,6 +1,7 @@
 { pkgs, lib, ... }:
 let
   pass-rofi = pkgs.callPackage ../pass-rofi {};
+  source-rofi = pkgs.callPackage ../source-rofi {};
 in
 {
   xdg.portal.configPackages = [ pkgs.xdg-desktop-portal-hyprland ];
@@ -112,6 +113,7 @@ in
         "$mainMod, B, exec, zen-beta"
         "$mainMod, T, exec, ${pkgs.ghostty}/bin/ghostty"
         "SUPER, P, exec, ${pass-rofi}/bin/rofi-pass"
+        "SUPER, S, exec, ${source-rofi}/bin/rofi-obsidian-source"
         "SUPER, code:65, exec, ${pkgs.rofi}/bin/rofi -show drun"
 
         "$mainMod, M, layoutmsg, cycleprev"
