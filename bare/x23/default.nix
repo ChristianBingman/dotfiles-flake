@@ -32,6 +32,7 @@ in{
     openFirewall = true;
   };
   home-manager.users.christian = import ../../home.nix { inherit pkgs lib vars inputs; };
+  home-manager.backupFileExtension = "bak";
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -198,12 +199,6 @@ in{
     password=${config.sops.placeholder."smb/password"}
   '';
   networking = {
-    vlans = {
-      guest0 = {
-        id = 100;
-        interface = "eth0";
-      };
-    };
     bridges = {
       vmbr0 = {
         interfaces = ["eth0"];
@@ -214,12 +209,6 @@ in{
     usePredictableInterfaceNames = false;
     defaultGateway = "10.2.0.1";
     nameservers = [ "10.2.0.1" "8.8.8.8" ];
-    interfaces.guest0.ipv4.addresses = [
-    {
-      prefixLength = 24;
-      address = "10.5.0.2";
-    }
-    ];
     interfaces.vmbr0.ipv4.addresses = [
       {
         prefixLength = 24;
@@ -234,10 +223,15 @@ in{
 
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 3003 5800 19999 8443 8080 8843 8880 6789 ];
-  networking.firewall.allowedUDPPorts = [ 3478 10001 1900 5514 ];
-  networking.firewall.interfaces.guest0 = {
-    allowedTCPPorts = [ 53 ];
-    allowedUDPPorts = [ 67 68 53 ];
+  networking.firewall.allowedUDPPorts = [ 1900 3478 7359 10001 1900 5514 ];
+  fileSystems."/mnt/music" = {
+    device = "//ironman.christianbingman.com/General/Music";
+    fsType = "cifs";
+    options = let
+        # this line prevents hanging on network split
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+
+    in ["${automount_opts},mfsymlinks,uid=1000,gid=100,credentials=${config.sops.templates."x53-smb-secrets".path}"];
   };
   fileSystems."/mnt/movies" = {
     device = "//ironman.christianbingman.com/General/Movies";
@@ -257,8 +251,17 @@ in{
 
     in ["${automount_opts},mfsymlinks,uid=1000,gid=100,credentials=${config.sops.templates."x53-smb-secrets".path}"];
   };
+  fileSystems."/mnt/pinchflat" = {
+    device = "//ironman.christianbingman.com/DockerBackup/Kubernetes/pinchflat-pinchflat-downloads-pvc-9424cefb-fcef-48dd-b520-2e321f2a0379";
+    fsType = "cifs";
+    options = let
+        # this line prevents hanging on network split
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+
+    in ["${automount_opts},mfsymlinks,uid=1000,gid=100,credentials=${config.sops.templates."x53-smb-secrets".path}"];
+  };
   fileSystems."/mnt/tubearchivist" = {
-    device = "//ironman.christianbingman.com/DockerBackup/Kubernetes/tubearchivist-tubearchivist-media-pvc-bc9447d8-48e8-4081-8d2a-f7414c430577";
+    device = "//ironman.christianbingman.com/DockerBackup/Kubernetes/archived-tubearchivist-tubearchivist-media-pvc-bc9447d8-48e8-4081-8d2a-f7414c430577";
     fsType = "cifs";
     options = let
         # this line prevents hanging on network split
@@ -307,8 +310,8 @@ in{
     #ollama-rocm
     heroic
     umu-launcher
-    dnsmasq
     virt-manager
+    asunder
   ];
 
   services.ollama = {
@@ -392,40 +395,6 @@ in{
       ];
     };
   };
-  sops.secrets."elasticsearch_pass" = { sopsFile = ../../secrets/x53.yaml; };
-  sops.templates."elasticsearch_config.json".content = builtins.toJSON {
-    filebeat = {
-      inputs = [
-        {
-          type = "journald";
-          id = "everything";
-        }
-      ];
-    };
-    logging = {
-      level = "warning";
-    };
-    output = {
-      elasticsearch = {
-        hosts = [ "elasticsearch-int.christianbingman.com:9200" ];
-        username = "elastic";
-        password = config.sops.placeholder."elasticsearch_pass";
-      };
-    };
-    setup.ilm = {
-      enabled = true;
-      rollover_alias = "syslog-%{[agent.version]}";
-      pattern = "{now/d}-000001";
-      policy_name = "syslog-30d";
-    };
-  };
 
-  services.filebeat.enable = lib.mkDefault true;
-
-  systemd.services.filebeat.serviceConfig.ExecStart = lib.mkForce ''
-    ${pkgs.filebeat}/bin/filebeat -e \
-      -c '${config.sops.templates."elasticsearch_config.json".path}' \
-      --path.data '/var/lib/filebeat'
-  '';
 }
 

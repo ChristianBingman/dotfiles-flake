@@ -11,33 +11,6 @@ in{
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
   sops.age.generateKey = true;
-  sops.secrets."elasticsearch_pass" = {};
-  sops.templates."elasticsearch_config.json".content = builtins.toJSON {
-    filebeat = {
-      inputs = [
-        {
-          type = "journald";
-          id = "everything";
-        }
-      ];
-    };
-    logging = {
-      level = "warning";
-    };
-    output = {
-      elasticsearch = {
-        hosts = [ "elasticsearch-int.christianbingman.com:9200" ];
-        username = "elastic";
-        password = config.sops.placeholder."elasticsearch_pass";
-      };
-    };
-    setup.ilm = {
-      enabled = true;
-      rollover_alias = "syslog-%{[agent.version]}";
-      pattern = "{now/d}-000001";
-      policy_name = "syslog-30d";
-    };
-  };
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -108,13 +81,5 @@ in{
   '';
   services.qemuGuest.enable = true;
 
-  services.filebeat.enable = true;
-
   system.stateVersion = "25.11"; # Did you read the comment?
-
-  systemd.services.filebeat.serviceConfig.ExecStart = lib.mkForce ''
-    ${pkgs.filebeat}/bin/filebeat -e \
-      -c '${config.sops.templates."elasticsearch_config.json".path}' \
-      --path.data '/var/lib/filebeat'
-  '';
 }

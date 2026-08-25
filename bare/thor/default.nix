@@ -100,5 +100,4 @@ in {
     { device = "/dev/disk/by-label/nixos";                                  
       fsType = "ext4";
     };
-  services.filebeat.enable = false;
 }

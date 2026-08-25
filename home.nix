@@ -216,7 +216,11 @@ in
     krew
     papirus-icon-theme
   ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.isDarwin) [
+    papirus-icon-theme
+    hypridle
+    swaylock
     hyprcursor
+    wl-clipboard
     gamescope
     obsidian
     gnucash

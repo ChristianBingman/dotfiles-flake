@@ -13,44 +13,6 @@ in {
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
   sops.age.generateKey = true;
-  sops.secrets."elasticsearch_pass" = {sopsFile = ../../secrets/kube-shared.yaml;};
-  sops.templates."elasticsearch_config.json".content = builtins.toJSON {
-    filebeat = {
-      inputs = [
-        {
-          type = "container";
-          paths = [
-            "/var/log/containers/*.log"
-          ];
-        }
-      ];
-    };
-    processors = [
-      {
-        dissect = {
-          tokenizer = "/var/log/containers/%{orchestrator.resource.name}_%{orchestrator.resource.namespace}_%{orchestrator.resource.id}.log";
-          field = "log.file.path";
-          target_prefix = "";
-        };
-      }
-    ];
-    logging = {
-      level = "warning";
-    };
-    output = {
-      elasticsearch = {
-        hosts = [ "elasticsearch-int.christianbingman.com:9200" ];
-        username = "elastic";
-        password = config.sops.placeholder."elasticsearch_pass";
-      };
-    };
-    setup.ilm = {
-      enabled = true;
-      rollover_alias = "kubernetes-%{[agent.version]}";
-      pattern = "{now/d}-000001";
-      policy_name = "kubernetes-30d";
-    };
-  };
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
   boot.growPartition = true;
@@ -114,34 +76,6 @@ in {
 
   services.certmgr.package = lib.mkForce certmgr;
 
-  systemd.services.filebeat-container = {
-    serviceConfig.ExecStart = ''
-      ${pkgs.filebeat}/bin/filebeat -e \
-        -c '${config.sops.templates."elasticsearch_config.json".path}' \
-        --path.data '/var/lib/filebeat-container'
-    '';
-    serviceConfig.ExecStartPre = pkgs.writeShellScript "filebeat-container-pre" ''
-      set -euo pipefail
-
-      umask u=rwx,g=,o=
-
-      if [[ -h '/var/lib/filebeat/filebeat.yml' ]]; then
-        rm '/var/lib/filebeat/filebeat.yml'
-      fi
-
-      inherit_errexit_enabled=0
-      shopt -pq inherit_errexit && inherit_errexit_enabled=1
-      shopt -s inherit_errexit
-
-      ${pkgs.jq}/bin/jq >'/var/lib/filebeat/filebeat.yml' . <<'EOF'
-      {"filebeat":{"inputs":[],"modules":[]},"output":{"elasticsearch":{"hosts":["127.0.0.1:9200"]}}}
-      EOF
-      (( ! $inherit_errexit_enabled )) && shopt -u inherit_errexit
-    '';
-    serviceConfig.Restart = "always";
-    serviceConfig.StateDirectory = "filebeat-container";
-    wantedBy = [ "multi-user.target" ];
-  };
   virtualisation.containerd.settings = {
     debug.level = "warn";
     plugins."io.containerd.grpc.v1.cri".sandbox_image = "registry.k8s.io/pause:latest";

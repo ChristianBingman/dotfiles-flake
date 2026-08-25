@@ -52,6 +52,7 @@ let
     10.2.0.41 kube-int-ingress
     10.2.0.43 mosquitto
     10.2.0.44 registry.int.${domain}
+    10.2.0.45 wiim-controller
     # End MetalLB
     10.2.0.51 shangchi # Gaming windows VM
     10.2.0.52 x23 # Big Ol' PC
@@ -76,6 +77,7 @@ let
     "finance.int.${domain},kube-int-ingress"
     "privatebalance.int.${domain},kube-int-ingress"
     "immich.int.${domain},kube-int-ingress"
+    "pinchflat.int.${domain},kube-int-ingress"
   ];
   addresses = [
     "/.int.christianbingman.com/10.2.0.41"
@@ -128,7 +130,7 @@ in {
       privateKeyFile = config.sops.secrets.wg-private-key.path;
       peers = [
         {
-          publicKey = "ILXzrC4zH0wfXn8iqUEyjiAiYYbvCq1fj+pcTQUBZAM=";
+          publicKey = "DL0l8CqIqkt9yILH1sKRDfmL31FJGbteFSrMxDikCzk=";
           allowedIPs = [ "10.3.0.2/32" ];
         }
         {
