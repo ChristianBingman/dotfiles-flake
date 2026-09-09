@@ -51,9 +51,6 @@ in{
   hardware.steam-hardware.enable = true;
   programs.steam.enable = true;
   programs.steam.remotePlay.openFirewall = true;
-  programs.steam.package = pkgs.steam.override {
-    extraPkgs = pkgs: [ pkgs.libsForQt5.qt5.qtmultimedia ];
-  };
   systemd.sleep.settings.Sleep = {
     AllowSuspend = "no";
     AllowHibernation = "no";

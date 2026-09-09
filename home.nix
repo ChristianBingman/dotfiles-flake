@@ -70,7 +70,7 @@ in
           . "${vars.homedir}/.gpg-agent-info"
           export GPG_AGENT_INFO
       fi
-    '' + lib.optionalString pkgs.stdenv.isDarwin ''
+    '' + lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
     '' + lib.optionalString (vars.meraki or false) ''
       export PATH="''${KREW_ROOT:-$HOME/.krew}/bin:${vars.homedir}/node/bin:$PATH"
@@ -197,7 +197,7 @@ in
     ghostty
     (pass.withExtensions (ext: with ext; [pass-otp]))
 
-  ] ++ lib.optionals pkgs.stdenv.isDarwin [
+  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     m-cli # useful macOS CLI commands
     aerospace
   ] ++ lib.optionals (vars.meraki or false) [
@@ -215,7 +215,7 @@ in
     kubectl
     krew
     papirus-icon-theme
-  ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.isDarwin) [
+  ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.hostPlatform.isDarwin) [
     papirus-icon-theme
     hypridle
     swaylock
@@ -224,5 +224,6 @@ in
     gamescope
     obsidian
     gnucash
+    picard
   ];
 }
