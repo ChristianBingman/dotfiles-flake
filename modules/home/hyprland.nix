@@ -6,19 +6,19 @@ in
 {
   xdg.portal.configPackages = [ pkgs.xdg-desktop-portal-hyprland ];
 
-  home.pointerCursor = lib.mkIf (!pkgs.stdenv.isDarwin) {
+  home.pointerCursor = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
     package = pkgs.whitesur-cursors;
     name = "WhiteSur-cursors";
     size = 24;
   };
 
-  home.sessionVariables = lib.mkIf (!pkgs.stdenv.isDarwin) {
+  home.sessionVariables = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
     XCURSOR_THEME = "WhiteSur-cursors";
     XCURSOR_SIZE = "24";
   };
 
   wayland.windowManager.hyprland = {
-    enable = !pkgs.stdenv.isDarwin;
+    enable = !pkgs.stdenv.hostPlatform.isDarwin;
     configType = "hyprlang";
     settings = {
       "$mainMod" = "CTRL + ALT";

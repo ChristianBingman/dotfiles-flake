@@ -1,6 +1,6 @@
 { pkgs, lib, ... }:
 {
-  programs.waybar = lib.mkIf (!pkgs.stdenv.isDarwin) {
+  programs.waybar = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
     enable = true;
 
     settings = [

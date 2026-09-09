@@ -196,7 +196,13 @@ in
     nerd-fonts.hasklug
     ghostty
     (pass.withExtensions (ext: with ext; [pass-otp]))
-
+  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+    papirus-icon-theme
+    hypridle
+    hyprcursor
+    wl-clipboard
+    obsidian
+    feishin
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     m-cli # useful macOS CLI commands
     aerospace
@@ -205,24 +211,14 @@ in
     nodejs_24
     ollama
     slack
-    hyprcursor
-    obsidian
     gdmStartHyprland
-    wl-clipboard
     codex
-    hypridle
     brightnessctl
     kubectl
     krew
-    papirus-icon-theme
   ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.hostPlatform.isDarwin) [
-    papirus-icon-theme
-    hypridle
     swaylock
-    hyprcursor
-    wl-clipboard
     gamescope
-    obsidian
     gnucash
     picard
   ];

@@ -94,7 +94,7 @@ let
   '';
 in
 {
-  xdg.configFile."rofi/config.rasi" = lib.mkIf (!pkgs.stdenv.isDarwin) {
+  xdg.configFile."rofi/config.rasi" = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
     text = ''
       configuration {
         modi: "drun,run,window";

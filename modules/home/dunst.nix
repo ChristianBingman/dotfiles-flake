@@ -12,7 +12,7 @@ let
   ];
 in
 {
-  services.dunst = lib.mkIf (!pkgs.stdenv.isDarwin) {
+  services.dunst = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
     enable = true;
     settings = {
       global = {
