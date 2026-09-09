@@ -69,7 +69,7 @@ in{
   services.netdata.enable = true;
   services.netdata.config.statsd.enabled = "yes";
   services.netdata.package = pkgs.netdata.override {withCloudUi = true;};
-  services.journald.extraConfig = ''
-    SystemMaxUse=500M
-  '';
+  services.journald.settings.Journal = { 
+    SystemMaxUse = "500M";
+  };
 }

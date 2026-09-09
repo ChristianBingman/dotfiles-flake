@@ -47,6 +47,7 @@ in {
     ln -sfn ${pkgs.openiscsi}/bin/iscsiadm /bin
     ln -sfn ${pkgs.util-linux}/bin/mount /bin
     ln -sfn ${pkgs.util-linux}/bin/fstrim /bin
+    ln -sfn ${pkgs.cryptsetup}/bin/cryptsetup /bin
   '';
 
   services.kubernetes = {
