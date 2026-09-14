@@ -10,6 +10,37 @@ let
     gituser = "ChristianBingman";
     gitemail = "christianbingman@gmail.com";
   };
+  # Shared sync logic used both by the udev-triggered plug-in sync and the
+  # nightly timer. Takes the iPod data partition's device path as $1.
+  ipodSyncScript = pkgs.writeShellScript "ipod-sync" ''
+    set -euo pipefail
+
+    dev="$1"
+    mnt="/mnt/ipod"
+    src_music="/mnt/music"
+    src_podcasts="/mnt/podgrab"
+
+    if [ -z "$(${pkgs.coreutils}/bin/ls -A "$src_music" 2>/dev/null)" ]; then
+      echo "ipod-sync: $src_music is empty or unavailable, aborting" >&2
+      exit 1
+    fi
+
+    if [ -z "$(${pkgs.coreutils}/bin/ls -A "$src_podcasts" 2>/dev/null)" ]; then
+      echo "ipod-sync: $src_podcasts is empty or unavailable, aborting" >&2
+      exit 1
+    fi
+
+    ${pkgs.coreutils}/bin/mkdir -p "$mnt"
+    ${pkgs.util-linux}/bin/mount "$dev" "$mnt"
+    cleanup() { ${pkgs.util-linux}/bin/umount "$mnt" || true; }
+    trap cleanup EXIT
+
+    ${pkgs.coreutils}/bin/mkdir -p "$mnt/FLACs"
+    ${pkgs.coreutils}/bin/mkdir -p "$mnt/Podcasts"
+    ${pkgs.rsync}/bin/rsync -rtXv --delete --modify-window=2 "$src_music"/ "$mnt"/FLACs/
+    ${pkgs.rsync}/bin/rsync -rtXv --delete --modify-window=2 "$src_podcasts"/ "$mnt"/Podcasts/
+    ${pkgs.coreutils}/bin/sync
+  '';
 in{
   imports = [
     ../../modules/wol-vm-controller
@@ -266,6 +297,15 @@ in{
 
     in ["${automount_opts},mfsymlinks,uid=1000,gid=100,credentials=${config.sops.templates."x53-smb-secrets".path}"];
   };
+  fileSystems."/mnt/podgrab" = {
+    device = "//ironman.christianbingman.com/DockerBackup/Kubernetes/podgrab-podgrab-podcasts-pvc-702a992f-927b-4d3f-b844-4c3d221d3188";
+    fsType = "cifs";
+    options = let
+        # this line prevents hanging on network split
+        automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+
+    in ["${automount_opts},mfsymlinks,uid=1000,gid=100,credentials=${config.sops.templates."x53-smb-secrets".path}"];
+  };
   fileSystems."/home/christian/Development" = {
     device = "//ironman.christianbingman.com/HumanTorchDev";
     fsType = "cifs";
@@ -407,33 +447,48 @@ in{
     serviceConfig = {
       Type = "oneshot";
       TimeoutStartSec = "2h";
-      ExecStart = "${pkgs.writeShellScript "ipod-sync" ''
-        set -euo pipefail
-
-        dev="/dev/$1"
-        mnt="/mnt/ipod"
-        src="/mnt/music"
-
-        if [ -z "$(${pkgs.coreutils}/bin/ls -A "$src" 2>/dev/null)" ]; then
-          echo "ipod-sync: $src is empty or unavailable, aborting" >&2
-          exit 1
-        fi
-
-        ${pkgs.coreutils}/bin/mkdir -p "$mnt"
-        ${pkgs.util-linux}/bin/mount "$dev" "$mnt"
-        cleanup() { ${pkgs.util-linux}/bin/umount "$mnt" || true; }
-        trap cleanup EXIT
-
-        ${pkgs.coreutils}/bin/mkdir -p "$mnt/FLACs"
-        ${pkgs.rsync}/bin/rsync -rtXv --delete --modify-window=2 "$src"/ "$mnt"/FLACs/
-        ${pkgs.coreutils}/bin/sync
-      ''} %i";
+      ExecStart = "${ipodSyncScript} /dev/%i";
     };
   };
 
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="vfat", ENV{ID_FS_LABEL}=="CHRIS'S_IPO", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ipod-sync@%k.service"
   '';
+
+  # --- Also sync nightly at 2am, but only if the iPod happens to be plugged
+  # in already (e.g. left connected overnight). Looks up the partition by
+  # its actual filesystem label (spaces, not udev's underscore-encoded
+  # form) and skips quietly -- rather than failing -- when it's absent.
+  systemd.services.ipod-sync-nightly = {
+    description = "Nightly sync of FLAC library to iPod, if plugged in";
+    unitConfig.RequiresMountsFor = "/mnt/music";
+    serviceConfig = {
+      Type = "oneshot";
+      TimeoutStartSec = "2h";
+      ExecStart = "${pkgs.writeShellScript "ipod-sync-nightly" ''
+        set -euo pipefail
+
+        dev="$(${pkgs.util-linux}/bin/blkid -L "CHRIS'S IPO" 2>/dev/null || true)"
+        if [ -z "$dev" ]; then
+          echo "ipod-sync-nightly: iPod not plugged in, skipping" >&2
+          exit 0
+        fi
+
+        exec ${ipodSyncScript} "$dev"
+      ''}";
+    };
+  };
+
+  systemd.timers.ipod-sync-nightly = {
+    description = "Nightly iPod sync timer (2am, only if plugged in)";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "02:00";
+      # Don't catch up on a missed run at boot -- the iPod being plugged in
+      # right now is exactly what we can't infer from a missed schedule.
+      Persistent = false;
+    };
+  };
 
 }
 

@@ -78,6 +78,7 @@ let
     "privatebalance.int.${domain},kube-int-ingress"
     "immich.int.${domain},kube-int-ingress"
     "pinchflat.int.${domain},kube-int-ingress"
+    "pg.int.${domain},kube-int-ingress"
   ];
   addresses = [
     "/.int.christianbingman.com/10.2.0.41"
