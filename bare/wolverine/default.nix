@@ -5,7 +5,6 @@ let
   lan_ipv6 = "fd00::1";
   wan_interface = "eth0";
   lan_interface = "eth1";
-  tailscale_interface = "tailscale0";
   dns_servers = [ "1.1.1.1" "8.8.8.8" ];
   dhcp_ranges = [ 
     "10.2.0.75,10.2.0.254,255.255.255.0,6h"
@@ -105,13 +104,15 @@ let
     no-hosts
     domain=${guest_domain}
     cache-size=150
+    stop-dns-rebind
+    bogus-priv
+    domain-needed
   '';
 in {
   sops.defaultSopsFile = ../../secrets/wolverine.yaml;
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
   sops.age.generateKey = true;
-  sops.secrets.ts-authkey = {};
   sops.secrets.wg-private-key = {};
   networking.wireguard = {
     enable = true;
@@ -160,6 +161,22 @@ in {
 
     "net.ipv6.conf.${lan_interface}.autoconf" = 0;
 
+    # Anti-spoofing / anti-redirect hardening. checkReversePath = "strict"
+    # (below) covers rp_filter; these close the ICMP-redirect and
+    # source-routing route-poisoning vectors.
+    "net.ipv4.conf.all.accept_redirects" = false;
+    "net.ipv4.conf.default.accept_redirects" = false;
+    "net.ipv4.conf.all.send_redirects" = false;
+    "net.ipv4.conf.default.send_redirects" = false;
+    "net.ipv4.conf.all.accept_source_route" = false;
+    "net.ipv4.conf.default.accept_source_route" = false;
+    "net.ipv4.conf.all.log_martians" = true;
+    "net.ipv4.conf.default.log_martians" = true;
+
+    "net.ipv6.conf.all.accept_redirects" = false;
+    "net.ipv6.conf.default.accept_redirects" = false;
+    "net.ipv6.conf.all.accept_source_route" = false;
+    "net.ipv6.conf.default.accept_source_route" = false;
   };
 
   networking = {
@@ -196,8 +213,8 @@ in {
     firewall = {
       enable = true;
       allowPing = true;
-      # Remove this line
-      interfaces.eth0.allowedTCPPorts = [ 22 ];
+      pingLimit = "--limit 5/second --limit-burst 10";
+      checkReversePath = "strict";
       interfaces.eth0.allowedUDPPorts = [ 51820 ];
       interfaces.eth1.allowedTCPPorts = [ 22 53 9162 19999 61208 ];
       interfaces.eth1.allowedUDPPorts = [ 67 68 53 546 547 ];
@@ -212,10 +229,6 @@ in {
         iptables -A FORWARD -i ${wan_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
         iptables -A FORWARD -i ${lan_interface} -o ${wan_interface}
 
-        iptables -t nat -A POSTROUTING -o ${tailscale_interface} -j MASQUERADE
-        iptables -A FORWARD -i ${tailscale_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
-        iptables -A FORWARD -i ${lan_interface} -o ${tailscale_interface}
-
         iptables -t nat -A POSTROUTING -o guest0 -j MASQUERADE
         iptables -A FORWARD -i ${wan_interface} -o guest0 -m conntrack --ctstate RELATED,ESTABLISHED
         iptables -A FORWARD -i guest0 -o ${wan_interface}
@@ -223,10 +236,6 @@ in {
         ip6tables -t nat -A POSTROUTING -o ${wan_interface} -j MASQUERADE
         ip6tables -A FORWARD -i ${wan_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
         ip6tables -A FORWARD -i ${lan_interface} -o ${wan_interface}
-
-        ip6tables -t nat -A POSTROUTING -o ${tailscale_interface} -j MASQUERADE
-        ip6tables -A FORWARD -i ${tailscale_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
-        ip6tables -A FORWARD -i ${lan_interface} -o ${tailscale_interface}
 
         ip6tables -t nat -A POSTROUTING -o guest0 -j MASQUERADE
         ip6tables -A FORWARD -i ${wan_interface} -o guest0 -m conntrack --ctstate RELATED,ESTABLISHED
@@ -247,6 +256,11 @@ in {
       bind-interfaces = true;
       dhcp-authoritative = true;
       no-hosts = true;
+      # DNS-rebinding protection: reject private-range answers from
+      # upstream resolvers and don't forward bare/unqualified names.
+      stop-dns-rebind = true;
+      bogus-priv = true;
+      domain-needed = true;
       addn-hosts = [
         "${hosts}"
       ];
@@ -293,14 +307,12 @@ in {
     restartTriggers = [ guest_dnsmasq_conf ];
   };
 
-  services.tailscale = {
-    enable = true;
-    extraUpFlags = [
-      "--advertise-routes=10.2.0.0/24"
-      "--accept-dns=false"
-    ];
-    authKeyFile = config.sops.secrets.ts-authkey.path;
-    useRoutingFeatures = "server";
+  # Don't let the openssh module auto-open port 22 on every interface
+  # (its default). SSH is only reachable via eth1's explicit allowedTCPPorts.
+  services.openssh.openFirewall = false;
+  services.openssh.settings = {
+    PasswordAuthentication = false;
+    KbdInteractiveAuthentication = false;
   };
 
   services.apcupsd.enable = true;
