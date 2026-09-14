@@ -393,5 +393,47 @@ in{
     };
   };
 
+  # --- Auto-sync the FLAC library to the iPod on plug-in --------------------
+  # When the iPod's FAT32 data partition appears (udev reports its 11-char
+  # label "CHRIS'S IPOD" as ID_FS_LABEL=CHRIS'S_IPO), udev tags its device
+  # unit so that ipod-sync@<kernel-name>.service is pulled in. The service
+  # mounts it, rsyncs /mnt/music -> <ipod>/FLACs, then unmounts.
+  systemd.services."ipod-sync@" = {
+    description = "Sync FLAC library to iPod (/dev/%i)";
+    # Make sure the SMB source automount is ordered before us; the script
+    # also refuses to run if the source turns up empty, so a failed network
+    # mount can never let --delete wipe the iPod.
+    unitConfig.RequiresMountsFor = "/mnt/music";
+    serviceConfig = {
+      Type = "oneshot";
+      TimeoutStartSec = "2h";
+      ExecStart = "${pkgs.writeShellScript "ipod-sync" ''
+        set -euo pipefail
+
+        dev="/dev/$1"
+        mnt="/mnt/ipod"
+        src="/mnt/music"
+
+        if [ -z "$(${pkgs.coreutils}/bin/ls -A "$src" 2>/dev/null)" ]; then
+          echo "ipod-sync: $src is empty or unavailable, aborting" >&2
+          exit 1
+        fi
+
+        ${pkgs.coreutils}/bin/mkdir -p "$mnt"
+        ${pkgs.util-linux}/bin/mount "$dev" "$mnt"
+        cleanup() { ${pkgs.util-linux}/bin/umount "$mnt" || true; }
+        trap cleanup EXIT
+
+        ${pkgs.coreutils}/bin/mkdir -p "$mnt/FLACs"
+        ${pkgs.rsync}/bin/rsync -rtXv --delete --modify-window=2 "$src"/ "$mnt"/FLACs/
+        ${pkgs.coreutils}/bin/sync
+      ''} %i";
+    };
+  };
+
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="vfat", ENV{ID_FS_LABEL}=="CHRIS'S_IPO", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ipod-sync@%k.service"
+  '';
+
 }
 
