@@ -1,4 +1,51 @@
 { pkgs, ... }:
+let
+  playerctl = "${pkgs.playerctl}/bin/playerctl";
+  playerctlStatus = pkgs.writeShellScript "tmux-playerctl-status" ''
+    scroll_width=25
+    scroll_step=2
+    scroll_gap="    "
+    state_file="''${XDG_RUNTIME_DIR:-/tmp}/tmux-playerctl-status-''${UID:-default}.state"
+
+    status="$(${playerctl} status 2>/dev/null)" || exit 0
+    case "$status" in
+      Playing) icon="󰏤" ;;
+      Paused) icon="󰐊" ;;
+      *) icon="󰓛" ;;
+    esac
+
+    metadata="$(${playerctl} metadata --format '{{ artist }}: {{ title }}' 2>/dev/null)" || exit 0
+    [ -n "$metadata" ] || exit 0
+
+    track_id="$(${playerctl} metadata --format '{{ mpris:trackid }}' 2>/dev/null)"
+    [ -n "$track_id" ] || track_id="$metadata"
+
+    offset=0
+    if [ -r "$state_file" ]; then
+      mapfile -t saved_state < "$state_file"
+      saved_track_id="''${saved_state[0]:-}"
+      saved_offset="''${saved_state[1]:-}"
+      if [ "$saved_track_id" = "$track_id" ] && [[ "$saved_offset" =~ ^[0-9]+$ ]]; then
+        offset="$saved_offset"
+      fi
+    fi
+
+    if [ ''${#metadata} -le "$scroll_width" ]; then
+      display="$metadata"
+      next_offset=0
+    else
+      scroll_text="$metadata$scroll_gap$metadata"
+      display="''${scroll_text:offset:scroll_width}"
+      next_offset=$(( (offset + scroll_step) % (''${#metadata} + ''${#scroll_gap}) ))
+    fi
+
+    {
+      printf '%s\n' "$track_id"
+      printf '%s\n' "$next_offset"
+    } > "$state_file"
+    printf ' %s  %s\n' "$icon" "$display"
+  '';
+in
 {
   programs.tmux = {
     enable = true;
@@ -97,8 +144,8 @@
       set -g status-left '#[fg=color235,bg=color144,bold] #S #[fg=color144,bg=color238,nobold] #[fg=color144,bg=color238,bold]#(whoami) #[bg=color236] '
 
       set-option -g status-right-style none
-      set -g status-right-length 150
-      set -g status-right '#[fg=color238] #[fg=color181,bg=color238] #[fg=color181,bg=color238]%Y-%m-%d | %H:%M | #(cat /sys/class/power_supply/BAT0/capacity)% #[fg=color235,bg=color108,bold] #h '
+      set -g status-right-length 200
+      set -g status-right '#[fg=color238] #[fg=color181,bg=color238]#(${playerctlStatus}) #[fg=color181,bg=color238]| %Y-%m-%d | %H:%M | #(cat /sys/class/power_supply/BAT0/capacity)% #[fg=color235,bg=color108,bold] #h '
 
       set -g window-status-separator '#[fg=color247,bg=color236] '
       set -g window-status-format "#[fg=color8,bg=color236] #I | #[fg=color8,bg=color236]#W  "

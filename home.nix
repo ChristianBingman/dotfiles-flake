@@ -201,6 +201,7 @@ in
     hypridle
     hyprcursor
     wl-clipboard
+    playerctl
     obsidian
     feishin
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [

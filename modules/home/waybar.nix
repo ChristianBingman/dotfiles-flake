@@ -1,4 +1,18 @@
 { pkgs, lib, ... }:
+let
+  playerctl = "${pkgs.playerctl}/bin/playerctl";
+  playerctlStatus = pkgs.writeShellScript "waybar-playerctl-status" ''
+    status="$(${playerctl} status 2>/dev/null)" || exit 0
+    case "$status" in
+      Playing) icon="󰏤" ;;
+      Paused) icon="󰐊" ;;
+      *) icon="󰓛" ;;
+    esac
+
+    metadata="$(${playerctl} metadata --format '{{ artist }} - {{ title }}' 2>/dev/null)" || exit 0
+    [ -n "$metadata" ] && printf '%s  %s\n' "$icon" "$metadata"
+  '';
+in
 {
   programs.waybar = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
     enable = true;
@@ -10,7 +24,7 @@
         spacing = 0;
         modules-left = [ ];
         modules-center = [ ];
-        modules-right = [ "privacy" "hyprland/workspaces" "wireplumber" "battery" "clock" ];
+        modules-right = [ "privacy" "hyprland/workspaces" "custom/playerctl" "wireplumber" "battery" "clock" ];
 
         "hyprland/workspaces" = {
           format = "󰆍  {name}";
@@ -51,6 +65,18 @@
           tooltip = false;
           scroll-step = 5;
           on-click = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        };
+
+        "custom/playerctl" = {
+          exec = "${playerctlStatus}";
+          exec-if = "${playerctl} status >/dev/null 2>&1";
+          interval = 2;
+          on-click = "${playerctl} play-pause";
+          on-click-right = "${playerctl} next";
+          on-click-middle = "${playerctl} previous";
+          return-type = "string";
+          max-length = 60;
+          tooltip = false;
         };
 
         privacy = {
@@ -100,6 +126,7 @@
       }
 
       #clock,
+      #custom-playerctl,
       #wireplumber,
       #battery,
       #workspaces {
