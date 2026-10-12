@@ -208,8 +208,9 @@ in
     m-cli # useful macOS CLI commands
     aerospace
   ] ++ lib.optionals (vars.meraki or false) [
+    uv # MCP servers
     teleport
-    nodejs_24
+    nodejs_24 # MCP servers
     ollama
     slack
     gdmStartHyprland
