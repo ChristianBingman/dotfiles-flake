@@ -55,6 +55,7 @@ let
     # End MetalLB
     10.2.0.51 shangchi # Gaming windows VM
     10.2.0.52 x23 # Big Ol' PC
+    fd00::100 x23
     10.2.0.53 cloak # Meraki MS350
     100.121.124.110 northstar # Remote PI
   '';
@@ -139,6 +140,10 @@ in {
           publicKey = "CNQoFE11Lsw1D+i63ch7YGny0D4E2H6hTPI9RTaGIAo=";
           allowedIPs = [ "10.3.0.3/32" ];
         }
+        {
+          publicKey = "tTEn8Z5rCqh+S4WoEWKEdI2RAkTeb+kww4SQIgmzo0E=";
+          allowedIPs = [ "10.3.0.4/32" ];
+        }
       ];
     };
   };
@@ -161,9 +166,12 @@ in {
 
     "net.ipv6.conf.${lan_interface}.autoconf" = 0;
 
-    # Anti-spoofing / anti-redirect hardening. checkReversePath = "strict"
-    # (below) covers rp_filter; these close the ICMP-redirect and
-    # source-routing route-poisoning vectors.
+    # Anti-spoofing / anti-redirect hardening. Strict rp_filter is applied
+    # WAN-only via a manual rpfilter rule below (see extraCommands) rather
+    # than networking.firewall.checkReversePath, since LAN clients can
+    # legitimately source traffic from prefixes we don't route ourselves
+    # (e.g. Thread Border Routers). These sysctls close the ICMP-redirect
+    # and source-routing route-poisoning vectors instead.
     "net.ipv4.conf.all.accept_redirects" = false;
     "net.ipv4.conf.default.accept_redirects" = false;
     "net.ipv4.conf.all.send_redirects" = false;
@@ -214,7 +222,14 @@ in {
       enable = true;
       allowPing = true;
       pingLimit = "--limit 5/second --limit-burst 10";
-      checkReversePath = "strict";
+      # Reverse-path filtering is applied WAN-only, manually, below (see
+      # extraCommands) instead of via checkReversePath, which would apply
+      # strict mode to every interface. LAN clients can legitimately source
+      # traffic from prefixes wolverine doesn't route itself (e.g. Thread
+      # Border Routers advertising their mesh's off-mesh-routable prefix),
+      # which strict mode would drop. WAN spoofing protection is what
+      # actually matters, so it's the only interface enforced.
+      checkReversePath = false;
       interfaces.eth0.allowedUDPPorts = [ 51820 ];
       interfaces.eth1.allowedTCPPorts = [ 22 53 9162 19999 61208 ];
       interfaces.eth1.allowedUDPPorts = [ 67 68 53 546 547 ];
@@ -225,6 +240,28 @@ in {
       interfaces.tun0.allowedTCPPorts = [ 26864 ];
       interfaces.tun0.allowedUDPPorts = [ 26864 ];
       extraCommands = ''
+        # Strict reverse-path filtering, WAN-only (see checkReversePath
+        # comment above). Mirrors what networking.firewall.checkReversePath
+        # would install, minus the DHCPv4-client carve-out only relevant to
+        # non-WAN interfaces, scoped to just ${wan_interface}.
+        iptables -t mangle -D PREROUTING -i ${wan_interface} -j wolverine-fw-rpfilter-wan 2>/dev/null || true
+        iptables -t mangle -F wolverine-fw-rpfilter-wan 2>/dev/null || true
+        iptables -t mangle -X wolverine-fw-rpfilter-wan 2>/dev/null || true
+        iptables -t mangle -N wolverine-fw-rpfilter-wan
+        iptables -t mangle -A wolverine-fw-rpfilter-wan -m rpfilter --validmark -j RETURN
+        iptables -t mangle -A wolverine-fw-rpfilter-wan -p udp --sport 67 --dport 68 -j RETURN
+        iptables -t mangle -A wolverine-fw-rpfilter-wan -s 0.0.0.0 -d 255.255.255.255 -p udp --sport 68 --dport 67 -j RETURN
+        iptables -t mangle -A wolverine-fw-rpfilter-wan -j DROP
+        iptables -t mangle -A PREROUTING -i ${wan_interface} -j wolverine-fw-rpfilter-wan
+
+        ip6tables -t mangle -D PREROUTING -i ${wan_interface} -j wolverine-fw-rpfilter-wan 2>/dev/null || true
+        ip6tables -t mangle -F wolverine-fw-rpfilter-wan 2>/dev/null || true
+        ip6tables -t mangle -X wolverine-fw-rpfilter-wan 2>/dev/null || true
+        ip6tables -t mangle -N wolverine-fw-rpfilter-wan
+        ip6tables -t mangle -A wolverine-fw-rpfilter-wan -m rpfilter --validmark -j RETURN
+        ip6tables -t mangle -A wolverine-fw-rpfilter-wan -j DROP
+        ip6tables -t mangle -A PREROUTING -i ${wan_interface} -j wolverine-fw-rpfilter-wan
+
         iptables -t nat -A POSTROUTING -o ${wan_interface} -j MASQUERADE
         iptables -A FORWARD -i ${wan_interface} -o ${lan_interface} -m conntrack --ctstate RELATED,ESTABLISHED
         iptables -A FORWARD -i ${lan_interface} -o ${wan_interface}

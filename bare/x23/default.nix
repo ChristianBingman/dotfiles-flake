@@ -243,6 +243,26 @@ in{
         address = "10.2.0.52";
       }
     ];
+    # Without this, RFC 6724 source-address selection prefers a temporary
+    # (privacy) address over the static fd00::100 above -- even for
+    # destinations that are a longest-prefix-match for fd00::100 -- because
+    # "prefer temporary" (net.ipv6.conf.*.use_tempaddr = 2, Linux's default)
+    # is checked before longest-prefix-match. vmbr0 is a server-facing
+    # bridge for long-lived services, not a roaming client interface, so a
+    # stable address is what we actually want here.
+    interfaces.vmbr0.tempAddress = "disabled";
+    # Static address in wolverine's LAN prefix (fd00::/64). Outside its
+    # DHCPv6 pool (fd00::2 - fd00::ff) to avoid colliding with a dynamic
+    # lease; the default route still comes from wolverine's router
+    # advertisements as usual, this just gives the host a stable address
+    # of its own instead of relying on whatever autonomous-flagged prefix
+    # happens to be advertised on the LAN (e.g. Thread Border Routers).
+    interfaces.vmbr0.ipv6.addresses = [
+      {
+        prefixLength = 64;
+        address = "fd00::100";
+      }
+    ];
   };
   hardware.graphics = {
     enable = true;
