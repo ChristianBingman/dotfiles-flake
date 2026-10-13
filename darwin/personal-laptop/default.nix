@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 let
 vars = {
   username = "christianbingman";
@@ -7,7 +7,7 @@ vars = {
   gitemail = "christianbingman@gmail.com";
 };
 in{
-  home-manager.users.christianbingman = import ../../home.nix { inherit pkgs lib vars; };
+  home-manager.users.christianbingman = import ../../home.nix { inherit pkgs lib vars inputs; };
   system.primaryUser = "christianbingman";
 
   homebrew = {

@@ -11,19 +11,20 @@ in
 {
 
   imports = [
+    ./modules/home/tmux.nix
     inputs.zen-browser.homeModules.beta
+  ] ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
     ./modules/home/dunst.nix
     ./modules/home/hyprland.nix
     ./modules/home/rofi.nix
-    ./modules/home/tmux.nix
     ./modules/home/waybar.nix
   ];
 
   fonts.fontconfig.enable = true;
-  programs.zen-browser = {
+  programs.zen-browser = (if pkgs.stdenv.hostPlatform.isDarwin then { enable = false; } else {
     enable = true;
     setAsDefaultBrowser = true;
-  };
+  });
   programs.home-manager.enable = true;
   home.username = vars.username;
   home.homeDirectory = vars.homedir;
@@ -45,7 +46,7 @@ in
     settings.user.email = vars.gitemail;
   };
 
-  home.pointerCursor.enable = true;
+  home.pointerCursor.enable = !pkgs.stdenv.hostPlatform.isDarwin;
 
   programs.neovim = {
     enable = true;
@@ -140,11 +141,14 @@ in
 
   home.file.".gnupg/gpg-agent.conf" = {
     text = ''
-      pinentry-program ${pkgs.pinentry-rofi}/bin/pinentry-rofi
       default-cache-ttl 600
       max-cache-ttl 7200
     '' + lib.optionalString (!vars.meraki or true) ''
       enable-ssh-support
+    '' + lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+      pinentry-program /opt/homebrew/bin/pinentry-mac
+    '' + lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
+      pinentry-program ${pkgs.pinentry-rofi}/bin/pinentry-rofi
     '';
   };
 
@@ -178,9 +182,9 @@ in
 
   
   targets.genericLinux = {
-    enable = true;
+    enable = !pkgs.stdenv.hostPlatform.isDarwin;
     gpu = {
-      enable = true;
+      enable = !pkgs.stdenv.hostPlatform.isDarwin;
     };
   };
 
@@ -194,9 +198,9 @@ in
     gnupg
     hasklig
     nerd-fonts.hasklug
-    ghostty
     (pass.withExtensions (ext: with ext; [pass-otp]))
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+    ghostty
     papirus-icon-theme
     hypridle
     hyprcursor
