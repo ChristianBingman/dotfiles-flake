@@ -222,6 +222,7 @@ in
     brightnessctl
     kubectl
     krew
+    gh
   ] ++ lib.optionals (!(vars.meraki or false) && !pkgs.stdenv.hostPlatform.isDarwin) [
     swaylock
     gamescope
